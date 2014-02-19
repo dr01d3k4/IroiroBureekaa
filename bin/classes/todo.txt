@@ -1,0 +1,6 @@
+- Maybe make UI elements use a physical size (not density based pixels)
+- Move game over to its own screen (but keep paused with game screen)
+- Make main menu
+- Achievements + sounds using a world listener object - when something happens in the world, the relevant function in the listener gets called
+- Play around with game difficulty, work out how its going to work (increasing, fixed etc)
+- Think about different game modes (timed, reach X points, different board sizes etc)

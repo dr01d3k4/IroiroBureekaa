@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+	<string name="app_name">Iroiro Burēkā!</string>
+	<string name="app_title">Iroiro Burēkā</string>
+	<string name="app_id">123456789</string>
+	<string name="play">Play!</string>
+	<string name="score">%1$d pts</string>
+	<string name="score_change">%1$d pts + %2$d</string>
+	<string name="paused">Paused</string>
+	<string name="resume">Resume</string>
+	<string name="pause_quit_game">Quit</string>
+	<string name="next">Next: </string>
+	<string name="leaving">Leaving</string>
+	<string name="sure_leave">Are you sure?</string>
+	<string name="yes">Yes</string>
+	<string name="no">No</string>
+	<string name="game_over">Game Over!</string>
+	<string name="game_over_score">Score: %1$d pts</string>
+	<string name="game_over_play_again">Play again!</string>
+	<string name="game_over_quit_game">@string/pause_quit_game</string>
+	<string name="loading">Loading&#8230;</string>
+	<string name="sign_out">Sign out from G+</string>
+
+</resources>

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+	<string name="app_name">イロイロ・ブレーカー！</string>
+	<string name="app_title">イロイロ ブレーカー</string>
+	<string name="play">スタート</string>
+	<string name="score">%1$dポイント</string>
+	<string name="score_change">%1$dポイント + %2$d</string>
+	<string name="paused">一時停止</string>
+	<string name="resume">戻る</string>
+	<string name="pause_quit_game">メニューへ戻る</string>
+	<string name="next">次: </string>
+	<string name="leaving">メニューへ</string>
+	<string name="sure_leave">本当によろしですか？</string>
+	<string name="yes">はい</string>
+	<string name="no">いいえ</string>
+	<string name="game_over">ゲームオーバー</string>
+	<string name="game_over_score">スコア: %1$dポイント</string>
+	<string name="game_over_play_again">リトライ</string>
+	<string name="game_over_quit_game">@string/pause_quit_game</string>
+	<string name="loading">ロード中</string>
+
+</resources>
