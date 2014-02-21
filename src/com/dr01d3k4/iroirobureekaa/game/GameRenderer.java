@@ -34,7 +34,6 @@ public class GameRenderer {
 	
 	private final Text pausedTextObject;
 	
-	
 	private Pixmap blocks;
 	
 	
@@ -58,8 +57,6 @@ public class GameRenderer {
 		
 		pausedTextObject = new Text(game.getString(R.string.paused), 0, game.PAUSED_TEXT_Y, game.CANVAS_WIDTH,
 			game.PAUSED_TEXT_HEIGHT);
-		
-		
 		
 		blocks = Assets.blocks;
 	}
@@ -157,7 +154,7 @@ public class GameRenderer {
 		int length = game.world.fallingPieces.size();
 		for (int i = 0; i < length; i++) {
 			final FallingPiece fallingPiece = game.world.fallingPieces.get(i);
-			renderCell(graphics, fallingPiece.getX(), fallingPiece.getY(), fallingPiece.getColour());
+			renderCell(graphics, fallingPiece.x, fallingPiece.y, fallingPiece.colour);
 		}
 		
 		if ((game.world.getState() == GameState.ADDING_NEW_ROW) && (game.world.newRow != null)) {

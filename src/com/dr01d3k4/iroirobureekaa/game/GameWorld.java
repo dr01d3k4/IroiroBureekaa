@@ -8,6 +8,11 @@ import java.util.Random;
 
 
 
+import com.dr01d3k4.iroirobureekaa.Pool;
+import com.dr01d3k4.iroirobureekaa.Pool.PoolObjectFactory;
+
+
+
 public class GameWorld {
 	public enum GameState {
 		NONE, INITIALIZING, ADDING_NEW_ROW, PLAYER_FALLING, LANDING_CELLS, PRE_CLEARING, CLEARING, GAP_FILL_FALL, LOST, GAME_OVER
@@ -35,6 +40,7 @@ public class GameWorld {
 	private float newRowTime = 0;
 	private float newRowCumulativeTime = 0;
 	
+	public Pool<FallingPiece> fallingPiecesPool;
 	public List<FallingPiece> fallingPieces;
 	public final List<FallingPiece> landedPieces;
 	public List<Cell> floodClearLocations;
@@ -73,6 +79,14 @@ public class GameWorld {
 		
 		newRowTime = NEW_ROW_BASE_TIME + random.nextInt(NEW_ROW_RANDOM_TIME);
 		startingRows = Grid.START_ROWS;
+		
+		// TODO: Finish changing it to use a pool
+		@SuppressWarnings ("unused")
+		PoolObjectFactory<FallingPiece> fallingPieceFactory = new PoolObjectFactory<FallingPiece>() {
+			public FallingPiece createObject() {
+				return new FallingPiece();
+			}
+		};
 		
 		fallingPieces = new ArrayList<FallingPiece>();
 		landedPieces = new ArrayList<FallingPiece>();
@@ -339,8 +353,8 @@ public class GameWorld {
 				
 				x = landedPiece.getRoundedX();
 				y = landedPiece.getRoundedY();
-				colour = landedPiece.getColour();
-				canStartClear = landedPiece.canStartClear();
+				colour = landedPiece.colour;
+				canStartClear = landedPiece.canStartClear;
 				
 				if (canStartClear && grid.isColourAt(x, y + 1, colour)) {
 					if (!grid.isMarkedForClearAt(x, y) && !grid.isMarkedForClearAt(x, y + 1)) {
@@ -480,7 +494,7 @@ public class GameWorld {
 			return false;
 		}
 		
-		final int colour = fallingPiece.getColour();
+		final int colour = fallingPiece.colour;
 		
 		grid.setColourAt(x, y, colour);
 		grid.setCellWorth(x, y, GameColour.getColourWorth(colour));
@@ -502,34 +516,34 @@ public class GameWorld {
 		}
 		
 		// TODO: Possible problem here with floating point accuracy?
-		if (fallingPiece.getX() != playerHorizontalTarget) {
+		if (fallingPiece.x != playerHorizontalTarget) {
 			final float moveAmount = deltaTime / PLAYER_HORIZONTAL_MOVE_TIME;
-			final int moveDirection = (playerHorizontalTarget > fallingPiece.getX()) ? 1 : -1;
+			final int moveDirection = (playerHorizontalTarget > fallingPiece.x) ? 1 : -1;
 			
 			// if (Math.abs(fallingPiece.getX() - playerHorizontalTarget) < moveAmount) {
 			
-			if (Math.abs(fallingPiece.getX() - playerHorizontalTarget) < moveAmount) {
-				fallingPiece.setX(Math.round(playerHorizontalTarget));
+			if (Math.abs(fallingPiece.x - playerHorizontalTarget) < moveAmount) {
+				fallingPiece.x = Math.round(playerHorizontalTarget);
 			} else {
-				fallingPiece.setX(fallingPiece.getX() + (moveAmount * moveDirection));
+				fallingPiece.x += moveAmount * moveDirection;
 			}
 			
-			final float x = fallingPiece.getX();
-			final float y = fallingPiece.getY();
+			final float x = fallingPiece.x;
+			final float y = fallingPiece.y;
 			
 			if (grid.isSolidAt((int) Math.floor(x), (int) Math.floor(y))
 				|| grid.isSolidAt((int) Math.floor(x), (int) Math.ceil(y))) {
-				fallingPiece.setX((int) Math.ceil(x));
+				fallingPiece.x = (int) Math.ceil(x);
 				playerHorizontalTarget = fallingPiece.getRoundedX();
 			}
 			
 			if (grid.isSolidAt((int) Math.ceil(x), (int) Math.floor(y))
 				|| grid.isSolidAt((int) Math.ceil(x), (int) Math.ceil(y))) {
-				fallingPiece.setX((int) Math.floor(x));
+				fallingPiece.x = (int) Math.floor(x);
 				playerHorizontalTarget = fallingPiece.getRoundedX();
 			}
 		} else {
-			fallingPiece.setX(playerHorizontalTarget);
+			fallingPiece.x = playerHorizontalTarget;
 		}
 	}
 	
@@ -539,8 +553,7 @@ public class GameWorld {
 		if (fallingPieces.size() != 1) {
 			return;
 		}
-		if (Math.abs(fallingPieces.get(0).getX() - playerHorizontalTarget) < deltaTime
-			/ PLAYER_HORIZONTAL_MOVE_TIME) {
+		if (Math.abs(fallingPieces.get(0).x - playerHorizontalTarget) < deltaTime / PLAYER_HORIZONTAL_MOVE_TIME) {
 			playerHorizontalTarget -= 1;
 		}
 	}
@@ -551,8 +564,7 @@ public class GameWorld {
 		if (fallingPieces.size() != 1) {
 			return;
 		}
-		if (Math.abs(fallingPieces.get(0).getX() - playerHorizontalTarget) < deltaTime
-			/ PLAYER_HORIZONTAL_MOVE_TIME) {
+		if (Math.abs(fallingPieces.get(0).x - playerHorizontalTarget) < deltaTime / PLAYER_HORIZONTAL_MOVE_TIME) {
 			playerHorizontalTarget += 1;
 		}
 	}
@@ -572,36 +584,34 @@ public class GameWorld {
 		int collisionX = -1;
 		int collisionY = -1;
 		
-		final float newX = fallingPiece.getX() + dx;
-		final float newY = fallingPiece.getY() + dy;
+		final float newX = fallingPiece.x + dx;
+		final float newY = fallingPiece.y + dy;
 		
 		if (newX <= 0) {
-			fallingPiece.setX(0);
+			fallingPiece.x = 0;
 		}
 		
 		if (newX >= (width - 1)) {
-			fallingPiece.setX(width - 1);
+			fallingPiece.x = width - 1;
 		}
 		
 		if (newY >= (height - 1)) {
-			fallingPiece.setY(height - 1);
+			fallingPiece.y = height - 1;
 			return false;
 		}
 		
-		if (fallingPiece.getY() > -1) {
+		if (fallingPiece.y > -1) {
 			boolean checkForCollision = true;
 			
-			final int startX = (int) ((dx <= 0) ? Math.floor(fallingPiece.getX()) : Math.ceil(fallingPiece
-				.getX()));
-			final int endX = (int) ((dx <= 0) ? Math.ceil(fallingPiece.getX() + dx) : Math
-				.floor(fallingPiece.getX()));
+			final int startX = (int) ((dx <= 0) ? Math.floor(fallingPiece.x) : Math.ceil(fallingPiece.x));
+			final int endX = (int) ((dx <= 0) ? Math.ceil(fallingPiece.x + dx) : Math.floor(fallingPiece.x));
 			final int incX = (dx <= 0) ? 1 : -1;
 			
 			while (checkForCollision) {
 				collision = false;
 				checkForCollision = false;
 				
-				if ((fallingPiece.getY() < -1) && collidedAtLeastOnce) {
+				if ((fallingPiece.y < -1) && collidedAtLeastOnce) {
 					collision = true;
 					collisionX = fallingPiece.getRoundedX();
 					collisionY = fallingPiece.getRoundedY();
@@ -609,8 +619,7 @@ public class GameWorld {
 				}
 				
 				for (int x = startX; (dx <= 0) ? (x <= endX) : (x >= endX); x += incX) {
-					for (int y = (int) Math.floor(fallingPiece.getY()); y < (Math.ceil(fallingPiece
-						.getY()
+					for (int y = (int) Math.floor(fallingPiece.y); y < (Math.ceil(fallingPiece.y
 						+ dy) + 1); y++) {
 						if (grid.isSolidAt(x, y)) {
 							collision = true;
@@ -628,7 +637,7 @@ public class GameWorld {
 				if (collision) {
 					checkForCollision = true;
 					collidedAtLeastOnce = true;
-					fallingPiece.setY((float) Math.floor(collisionY - 1));
+					fallingPiece.y = (float) Math.floor(collisionY - 1);
 					dy = 0;
 				} else {
 					checkForCollision = false;
@@ -637,10 +646,10 @@ public class GameWorld {
 		}
 		
 		if (collidedAtLeastOnce) {
-			fallingPiece.setX(collisionX);
+			fallingPiece.x = collisionX;
 		} else {
-			fallingPiece.setX(fallingPiece.getX() + dx);
-			fallingPiece.setY(fallingPiece.getY() + dy);
+			fallingPiece.x += dx;
+			fallingPiece.y += dy;
 		}
 		
 		return !collidedAtLeastOnce;

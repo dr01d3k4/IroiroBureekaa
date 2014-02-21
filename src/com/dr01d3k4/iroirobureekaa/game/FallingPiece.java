@@ -3,45 +3,49 @@ package com.dr01d3k4.iroirobureekaa.game;
 
 
 public class FallingPiece {
-	private float x;
-	private float y;
-	private final int colour;
-	private final boolean startClear;
+	public float x;
+	public float y;
+	public int colour;
+	public boolean canStartClear;
 	
 	
 	
-	public FallingPiece(final float x, final float y, final int colour, final boolean startClear) {
+	public FallingPiece() {}
+	
+	
+	
+	public FallingPiece(final float x, final float y, final int colour, final boolean canStartClear) {
 		this.x = x;
 		this.y = y;
 		this.colour = colour;
-		this.startClear = startClear;
+		this.canStartClear = canStartClear;
 	}
 	
 	
 	
-	public void setX(final float x) {
-		this.x = x;
-	}
-	
-	
-	
-	public float getX() {
-		return x;
-	}
-	
-	
-	
-	public void setY(final float y) {
-		this.y = y;
-	}
-	
-	
-	
-	public float getY() {
-		return y;
-	}
-	
-	
+//	public void setX(final float x) {
+//		this.x = x;
+//	}
+//	
+//	
+//	
+//	public float getX() {
+//		return x;
+//	}
+//	
+//	
+//	
+//	public void setY(final float y) {
+//		this.y = y;
+//	}
+//	
+//	
+//	
+//	public float getY() {
+//		return y;
+//	}
+//	
+//	
 	
 	public int getRoundedX() {
 		return Math.round(x);
@@ -55,13 +59,13 @@ public class FallingPiece {
 	
 	
 	
-	public int getColour() {
-		return colour;
-	}
-	
-	
-	
-	public boolean canStartClear() {
-		return startClear;
-	}
+//	public int getColour() {
+//		return colour;
+//	}
+//	
+//	
+//	
+//	public boolean canStartClear() {
+//		return startClear;
+//	}
 }

@@ -80,7 +80,7 @@ public class Text {
 		paint.setTextScaleX(1.0f);
 		
 		final Rect bounds = new Rect();
-		paint.getTextBounds(text, 0, text.length(), bounds);
+		paint.getTextBounds(text + "|", 0, text.length() + 1, bounds);
 		
 		int textHeight = bounds.bottom - bounds.top;
 		
@@ -90,7 +90,7 @@ public class Text {
 		paint.setTextSize(textSize);
 		paint.setTextScaleX(1.0f);
 		
-		paint.getTextBounds(text, 0, text.length(), bounds);
+		paint.getTextBounds(text + "|", 0, text.length() + 1, bounds);
 		
 		final int textWidth = bounds.right - bounds.left;
 		textHeight = bounds.bottom - bounds.top;

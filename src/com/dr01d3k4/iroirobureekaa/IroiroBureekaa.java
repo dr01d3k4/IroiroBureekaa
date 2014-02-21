@@ -2,6 +2,8 @@ package com.dr01d3k4.iroirobureekaa;
 
 
 
+import android.content.Intent;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.Config;
 import android.os.Bundle;
@@ -227,5 +229,17 @@ public class IroiroBureekaa extends BaseGameActivity implements OnClickListener 
 	@Override
 	public void onBackPressed() {
 		screen.onBackPressed();
+	}
+	
+	
+	
+	public void shareScore(int score) {
+		Resources resources = getResources();
+		Intent shareIntent = new Intent(Intent.ACTION_SEND);
+		shareIntent.setType("text/plain");
+		shareIntent.putExtra(Intent.EXTRA_TEXT, String
+			.format(resources.getString(R.string.sharing_score), score));
+		shareIntent.putExtra(Intent.EXTRA_SUBJECT, resources.getString(R.string.app_title));
+		startActivity(Intent.createChooser(shareIntent, resources.getString(R.string.share)));
 	}
 }

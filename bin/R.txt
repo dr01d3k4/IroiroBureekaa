@@ -114,6 +114,8 @@ int string play 0x7f060021
 int string resume 0x7f060025
 int string score 0x7f060022
 int string score_change 0x7f060023
+int string share 0x7f060033
+int string sharing_score 0x7f060032
 int string sign_out 0x7f060031
 int string sure_leave 0x7f060029
 int string yes 0x7f06002a

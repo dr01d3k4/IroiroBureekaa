@@ -21,5 +21,7 @@
 	<string name="game_over_quit_game">@string/pause_quit_game</string>
 	<string name="loading">Loading&#8230;</string>
 	<string name="sign_out">Sign out from G+</string>
+	<string name="sharing_score">I just got %1$d points in #IroiroBurēkā!</string>
+	<string name="share">Share</string>
 
 </resources>

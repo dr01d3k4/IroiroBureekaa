@@ -345,6 +345,8 @@ containing a value of this type.
         public static final int resume=0x7f060025;
         public static final int score=0x7f060022;
         public static final int score_change=0x7f060023;
+        public static final int share=0x7f060033;
+        public static final int sharing_score=0x7f060032;
         public static final int sign_out=0x7f060031;
         public static final int sure_leave=0x7f060029;
         public static final int yes=0x7f06002a;
