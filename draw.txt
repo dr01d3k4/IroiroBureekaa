@@ -1,0 +1,7 @@
+- Purple wild block
+- Left/down/right buttons
+- Pause button
+- Buttons with text "Resume", "Quit", "Play again!" and Japanese translation
+- Numbers for score
+- Text for "Score:", "pts", "Next:", "Paused", "Game Over"
+- Icon
