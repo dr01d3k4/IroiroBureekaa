@@ -30,15 +30,15 @@ public class GameRenderer {
 	private final Text scoreTextObject;
 	
 	private final Text nextTextObject;
-	private int nextCellX;
+	private final int nextCellX;
 	
 	private final Text pausedTextObject;
 	
-	private Pixmap blocks;
+	private final Pixmap blocks;
 	
 	
 	
-	public GameRenderer(GameScreen game, int gridWidth, int gridHeight) {
+	public GameRenderer(final GameScreen game, final int gridWidth, final int gridHeight) {
 		this.game = game;
 		this.gridWidth = gridWidth;
 		this.gridHeight = gridHeight;
@@ -67,7 +67,7 @@ public class GameRenderer {
 		int sourceX = 0;
 		int sourceY = 0;
 		
-		int properColour = GameColour.getDarkerColour(colour);
+		final int properColour = GameColour.getDarkerColour(colour);
 		
 		if (properColour == GameColour.WILD) {
 			sourceX = -1;
@@ -109,15 +109,15 @@ public class GameRenderer {
 	
 	private void renderCell(final Graphics graphics, final float drawX, final float drawY, final int width,
 		final int height, final int colour) {
-		int x = (int) drawX;
-		int y = (int) drawY;
+		final int x = (int) drawX;
+		final int y = (int) drawY;
 		
-		int[] source = colourToImageLocation(colour);
+		final int[] source = colourToImageLocation(colour);
 		
-		int sourceWidth = game.IMAGE_CELL_SIZE;
-		int sourceHeight = game.IMAGE_CELL_SIZE;
-		int destinationWidth = width;
-		int destinationHeight = height;
+		final int sourceWidth = game.IMAGE_CELL_SIZE;
+		final int sourceHeight = game.IMAGE_CELL_SIZE;
+		final int destinationWidth = width;
+		final int destinationHeight = height;
 		
 		if ((source[0] < 0) || (source[1] < 0)) {
 			graphics.drawRectangle(x, y, destinationWidth, destinationHeight, colour);
@@ -129,8 +129,8 @@ public class GameRenderer {
 	
 	
 	private void renderCell(final Graphics graphics, final float cellX, final float cellY, final int colour) {
-		int x = (int) Math.floor(cellX * game.CELL_SIZE);
-		int y = (int) Math.floor(cellY * game.CELL_SIZE);
+		final int x = (int) Math.floor(cellX * game.CELL_SIZE);
+		final int y = (int) Math.floor(cellY * game.CELL_SIZE);
 		
 		renderCell(graphics, x, y, game.CELL_SIZE, game.CELL_SIZE, colour);
 	}
@@ -164,7 +164,7 @@ public class GameRenderer {
 			}
 		}
 		
-		int bottomRowY = game.GRID_PIXEL_HEIGHT - game.BOTTOM_ROW_HEIGHT;
+		final int bottomRowY = game.GRID_PIXEL_HEIGHT - game.BOTTOM_ROW_HEIGHT;
 		graphics.drawRectangle(0, bottomRowY, game.GRID_PIXEL_WIDTH, game.BOTTOM_ROW_HEIGHT, GameColour.UI_LIGHT);
 		
 		if (game.world.nextRow != null) {
@@ -178,7 +178,7 @@ public class GameRenderer {
 			graphics.drawRectangle(0, game.GRID_PIXEL_HEIGHT, game.GRID_PIXEL_WIDTH, game.BOTTOM_ROW_CELL_WIDTH, GameColour.UI_DARK);
 		}
 		
-		int multiplier = game.world.getMultiplier();
+		final int multiplier = game.world.getMultiplier();
 		if (multiplier > 0) {
 			paint.setTextAlign(Align.CENTER);
 			paint.setTextSize(60 + (multiplier * 10));
@@ -205,7 +205,7 @@ public class GameRenderer {
 		scoreTextObject.render(graphics, paint);
 		nextTextObject.render(graphics, paint);
 		
-		int nextPieceSize = (int) (game.HEADER_HEIGHT * 0.4);
+		final int nextPieceSize = (int) (game.HEADER_HEIGHT * 0.4);
 		renderCell(graphics, nextCellX, (int) (game.HEADER_HEIGHT * 0.58), nextPieceSize, nextPieceSize, game.world.nextFallingPieceColour);
 		
 		game.pauseButton.render(graphics, paint);
@@ -213,7 +213,7 @@ public class GameRenderer {
 	
 	
 	
-	private void renderOnScreenControls(Graphics graphics, Paint paint) {
+	private void renderOnScreenControls(final Graphics graphics, final Paint paint) {
 		if (game.hasOnScreenControls()) {
 			graphics.drawRectangle(0, game.CANVAS_HEIGHT - game.FOOTER_HEIGHT, game.CANVAS_WIDTH, game.FOOTER_HEIGHT, GameColour.UI_LIGHT);
 			game.leftButton.render(graphics, paint);
@@ -224,7 +224,7 @@ public class GameRenderer {
 	
 	
 	
-	private void renderPaused(Graphics graphics, Paint paint) {
+	private void renderPaused(final Graphics graphics, final Paint paint) {
 		graphics.clear(GameColour.UI_LIGHT);
 		pausedTextObject.render(graphics, paint);
 		game.resumeButton.render(graphics, paint);

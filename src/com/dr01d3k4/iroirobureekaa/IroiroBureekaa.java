@@ -233,9 +233,9 @@ public class IroiroBureekaa extends BaseGameActivity implements OnClickListener 
 	
 	
 	
-	public void shareScore(int score) {
-		Resources resources = getResources();
-		Intent shareIntent = new Intent(Intent.ACTION_SEND);
+	public void shareScore(final int score) {
+		final Resources resources = getResources();
+		final Intent shareIntent = new Intent(Intent.ACTION_SEND);
 		shareIntent.setType("text/plain");
 		shareIntent.putExtra(Intent.EXTRA_TEXT, String
 			.format(resources.getString(R.string.sharing_score), score));

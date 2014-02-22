@@ -35,7 +35,7 @@ public class GameWorld {
 	private int addedRows = 0;
 	private int startingRows = 0;
 	
-	private static final int NEW_ROW_BASE_TIME = 8;
+	private static final int NEW_ROW_BASE_TIME = 6;
 	private static final int NEW_ROW_RANDOM_TIME = 8;
 	private float newRowTime = 0;
 	private float newRowCumulativeTime = 0;
@@ -82,7 +82,8 @@ public class GameWorld {
 		
 		// TODO: Finish changing it to use a pool
 		@SuppressWarnings ("unused")
-		PoolObjectFactory<FallingPiece> fallingPieceFactory = new PoolObjectFactory<FallingPiece>() {
+		final PoolObjectFactory<FallingPiece> fallingPieceFactory = new PoolObjectFactory<FallingPiece>() {
+			@Override
 			public FallingPiece createObject() {
 				return new FallingPiece();
 			}
@@ -549,29 +550,29 @@ public class GameWorld {
 	
 	
 	
-	public void moveLeft(float deltaTime) {
+	public void moveLeft(final float deltaTime) {
 		if (fallingPieces.size() != 1) {
 			return;
 		}
-		if (Math.abs(fallingPieces.get(0).x - playerHorizontalTarget) < deltaTime / PLAYER_HORIZONTAL_MOVE_TIME) {
+		if (Math.abs(fallingPieces.get(0).x - playerHorizontalTarget) < (deltaTime / PLAYER_HORIZONTAL_MOVE_TIME)) {
 			playerHorizontalTarget -= 1;
 		}
 	}
 	
 	
 	
-	public void moveRight(float deltaTime) {
+	public void moveRight(final float deltaTime) {
 		if (fallingPieces.size() != 1) {
 			return;
 		}
-		if (Math.abs(fallingPieces.get(0).x - playerHorizontalTarget) < deltaTime / PLAYER_HORIZONTAL_MOVE_TIME) {
+		if (Math.abs(fallingPieces.get(0).x - playerHorizontalTarget) < (deltaTime / PLAYER_HORIZONTAL_MOVE_TIME)) {
 			playerHorizontalTarget += 1;
 		}
 	}
 	
 	
 	
-	public void setPlayerFastFall(boolean downPressed) {
+	public void setPlayerFastFall(final boolean downPressed) {
 		playerFastFall = downPressed;
 	}
 	

@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<lint>
+    <issue id="DefaultLocale">
+        <ignore path="src/com/dr01d3k4/iroirobureekaa/game/gamemode/TimedMode.java" />
+    </issue>
+</lint>

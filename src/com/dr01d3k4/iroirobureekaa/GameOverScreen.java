@@ -17,9 +17,8 @@ import com.dr01d3k4.iroirobureekaa.render.Graphics;
 
 
 public class GameOverScreen extends Screen {
-	public final int score;
-	public final int gridWidth;
-	public final int gridHeight;
+	private final int score;
+	private final int gameModeId;
 	
 	private Text gameOverTextObject;
 	private Text gameOverScoreTextObject;
@@ -30,12 +29,10 @@ public class GameOverScreen extends Screen {
 	
 	
 	
-	public GameOverScreen(final IroiroBureekaa mainActivity, final int score, final int gridWidth,
-		final int gridHeight) {
+	public GameOverScreen(final IroiroBureekaa mainActivity, final int score, final int gameModeId) {
 		super(mainActivity);
 		this.score = score;
-		this.gridWidth = gridWidth;
-		this.gridHeight = gridHeight;
+		this.gameModeId = gameModeId;
 		
 		// mainActivity.gameData.onGameOver(world.getScore());
 		// mainActivity.saveGame();
@@ -108,7 +105,7 @@ public class GameOverScreen extends Screen {
 			
 			if (touchEvent.type == TouchEvent.TOUCH_UP) {
 				if (gameOverPlayAgainButton.visible && gameOverPlayAgainButton.isOver(x, y)) {
-					mainActivity.changeScreen(new GameScreen(mainActivity, gridWidth, gridHeight));
+					mainActivity.changeScreen(new GameScreen(mainActivity, gameModeId));
 					return;
 					
 				} else if (shareButton.visible && shareButton.isOver(x, y)) {

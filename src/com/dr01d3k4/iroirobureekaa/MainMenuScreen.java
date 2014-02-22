@@ -13,7 +13,7 @@ import android.graphics.Paint.Align;
 
 
 import com.dr01d3k4.iroirobureekaa.game.GameColour;
-import com.dr01d3k4.iroirobureekaa.game.Grid;
+import com.dr01d3k4.iroirobureekaa.game.gamemode.GameMode;
 import com.dr01d3k4.iroirobureekaa.input.TouchEvent;
 import com.dr01d3k4.iroirobureekaa.render.Graphics;
 
@@ -64,7 +64,7 @@ public class MainMenuScreen extends Screen {
 	
 	
 	public void startGame() {
-		mainActivity.changeScreen(new GameScreen(mainActivity, Grid.WIDTH, Grid.HEIGHT));
+		mainActivity.changeScreen(new GameScreen(mainActivity, GameMode.TIMED));
 	}
 	
 	

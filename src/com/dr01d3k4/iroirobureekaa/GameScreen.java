@@ -14,6 +14,8 @@ import android.content.DialogInterface;
 import com.dr01d3k4.iroirobureekaa.game.GameRenderer;
 import com.dr01d3k4.iroirobureekaa.game.GameWorld;
 import com.dr01d3k4.iroirobureekaa.game.GameWorld.GameState;
+import com.dr01d3k4.iroirobureekaa.game.Grid;
+import com.dr01d3k4.iroirobureekaa.game.gamemode.GameMode;
 import com.dr01d3k4.iroirobureekaa.input.TouchEvent;
 import com.dr01d3k4.iroirobureekaa.render.Graphics;
 
@@ -22,6 +24,8 @@ import com.dr01d3k4.iroirobureekaa.render.Graphics;
 public class GameScreen extends Screen {
 	public final GameWorld world;
 	private GameRenderer renderer;
+	private final GameMode gameMode;
+	private final int gameModeId;
 	
 	private final int gridWidth;
 	private final int gridHeight;
@@ -63,13 +67,16 @@ public class GameScreen extends Screen {
 	
 	
 	
-	public GameScreen(final IroiroBureekaa mainActivity, final int gridWidth, final int gridHeight) {
+	public GameScreen(final IroiroBureekaa mainActivity, final int gameModeId) {
 		super(mainActivity);
-		this.gridWidth = gridWidth;
-		this.gridHeight = gridHeight;
+		gridWidth = Grid.WIDTH;
+		gridHeight = Grid.HEIGHT;
 		
 		world = new GameWorld(gridWidth, gridHeight);
 		world.init();
+		
+		this.gameModeId = gameModeId;
+		gameMode = GameMode.idToMode(gameModeId, this);
 	}
 	
 	
@@ -249,10 +256,9 @@ public class GameScreen extends Screen {
 			world.update(deltaTime);
 			
 			if (world.getState() == GameState.GAME_OVER) {
-				mainActivity.changeScreen(new GameOverScreen(mainActivity, world.getScore(), gridWidth,
-					gridHeight));
-				return;
-				
+				gameOver();
+			} else {
+				gameMode.postUpdate(deltaTime);
 			}
 		}
 	}
@@ -262,6 +268,7 @@ public class GameScreen extends Screen {
 	@Override
 	public void render(final float deltaTime) {
 		renderer.render(deltaTime);
+		gameMode.postRender(deltaTime);
 	}
 	
 	
@@ -343,6 +350,12 @@ public class GameScreen extends Screen {
 			}
 		});
 		
+	}
+	
+	
+	
+	public void gameOver() {
+		mainActivity.changeScreen(new GameOverScreen(mainActivity, world.getScore(), gameModeId));
 	}
 	
 	
