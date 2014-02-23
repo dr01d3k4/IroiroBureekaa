@@ -42,7 +42,8 @@ public class GameColour {
 		final int randomNumber = random.nextInt(1000);
 		int cumulative = 0;
 		int colour = RANDOM_COLOURS[0];
-		for (int i = 0; i < RANDOM_COLOUR_PROBABILITY.length; i++) {
+		int length = RANDOM_COLOUR_PROBABILITY.length;
+		for (int i = 0; i < length; i += 1) {
 			cumulative += RANDOM_COLOUR_PROBABILITY[i];
 			if (randomNumber <= cumulative) {
 				colour = RANDOM_COLOURS[i];
@@ -57,7 +58,8 @@ public class GameColour {
 	public static int getColourWorth(int colour) {
 		colour = getDarkerColour(colour);
 		int worth = 0;
-		for (int i = 0; i < RANDOM_COLOURS.length; i++) {
+		int length = RANDOM_COLOURS.length;
+		for (int i = 0; i < length; i += 1) {
 			if (RANDOM_COLOURS[i] == colour) {
 				worth = COLOUR_WORTH[i];
 				break;

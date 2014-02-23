@@ -111,8 +111,8 @@ public class SingleTouchHandler implements TouchHandler {
 	@Override
 	public List<TouchEvent> getTouchEvents() {
 		synchronized (this) {
-			final int len = touchEvents.size();
-			for (int i = 0; i < len; i++) {
+			final int length = touchEvents.size();
+			for (int i = 0; i < length; i += 1) {
 				touchEventPool.free(touchEvents.get(i));
 			}
 			touchEvents.clear();
@@ -121,9 +121,9 @@ public class SingleTouchHandler implements TouchHandler {
 			return touchEvents;
 		}
 	}
-
-
-
+	
+	
+	
 	@Override
 	public void clearTouches() {
 		touchEvents.clear();

@@ -31,7 +31,8 @@ public class GameData implements Serializable {
 	
 	public String highscoresToString() {
 		String highscoreString = "{";
-		for (int i = 0; i < highscores.length; i++) {
+		int length = highscores.length;
+		for (int i = 0; i < length; i += 1) {
 			highscoreString += Integer.toString(highscores[i]) + ((i < highscores.length - 1) ? ", " : "");
 		}
 		highscoreString += "}";
@@ -49,7 +50,8 @@ public class GameData implements Serializable {
 			
 		} else {
 			int addAtPosition = highscores.length;
-			for (int i = 0; i < highscores.length; i++) {
+			int length = highscores.length;
+			for (int i = 0; i < length; i += 1) {
 				if (score > highscores[i]) {
 					addAtPosition = i;
 					break;
@@ -58,11 +60,12 @@ public class GameData implements Serializable {
 			
 			if (addAtPosition < MAX_HIGHSCORES) {
 				int[] newHighscores = new int[highscores.length + 1];
-				for (int i = 0; i < addAtPosition; i++) {
+				for (int i = 0; i < addAtPosition; i += 1) {
 					newHighscores[i] = highscores[i];
 				}
 				newHighscores[addAtPosition] = score;
-				for (int i = addAtPosition; i < highscores.length; i++) {
+				length = highscores.length;
+				for (int i = addAtPosition; i < length; i += 1) {
 					newHighscores[i + 1] = highscores[i];
 				}
 				highscores = newHighscores;

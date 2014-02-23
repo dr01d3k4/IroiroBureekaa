@@ -142,8 +142,8 @@ public class GameRenderer {
 		
 		graphics.drawRectangle(game.world.playerHorizontalTarget * game.CELL_SIZE, 0, game.CELL_SIZE, game.GRID_PIXEL_HEIGHT, GameColour.FALLING_COLUMN_HINT);
 		
-		for (int x = 0; x < gridWidth; x++) {
-			for (int y = 0; y < gridHeight; y++) {
+		for (int x = 0; x < gridWidth; x += 1) {
+			for (int y = 0; y < gridHeight; y += 1) {
 				if (!game.world.grid.isEmptyAt(x, y)) {
 					renderCell(graphics, x, y - game.world.newRowSlideIn, game.world.grid
 						.getColourAt(x, y));
@@ -152,14 +152,14 @@ public class GameRenderer {
 		}
 		
 		int length = game.world.fallingPieces.size();
-		for (int i = 0; i < length; i++) {
+		for (int i = 0; i < length; i += 1) {
 			final FallingPiece fallingPiece = game.world.fallingPieces.get(i);
 			renderCell(graphics, fallingPiece.x, fallingPiece.y, fallingPiece.colour);
 		}
 		
 		if ((game.world.getState() == GameState.ADDING_NEW_ROW) && (game.world.newRow != null)) {
 			length = game.world.newRow.length;
-			for (int i = 0; i < length; i++) {
+			for (int i = 0; i < length; i += 1) {
 				renderCell(graphics, i, gridHeight - game.world.newRowSlideIn, game.world.newRow[i]);
 			}
 		}
@@ -170,7 +170,7 @@ public class GameRenderer {
 		if (game.world.nextRow != null) {
 			length = game.world.nextRow.length;
 			
-			for (int i = 0; i < length; i++) {
+			for (int i = 0; i < length; i += 1) {
 				renderCell(graphics, (i * game.BOTTOM_ROW_CELL_FULL_WIDTH)
 					+ game.BOTTOM_ROW_CELL_X_OFFSET, game.BOTTOM_ROW_CELL_Y, game.BOTTOM_ROW_CELL_WIDTH, game.BOTTOM_ROW_CELL_WIDTH, game.world.nextRow[i]);
 			}

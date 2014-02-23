@@ -20,5 +20,4 @@ public class InfiniteMode extends GameMode {
 	
 	@Override
 	public void postRender(final float deltaTime) {}
-	
 }

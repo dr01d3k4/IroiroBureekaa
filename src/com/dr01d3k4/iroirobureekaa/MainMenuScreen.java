@@ -13,7 +13,7 @@ import android.graphics.Paint.Align;
 
 
 import com.dr01d3k4.iroirobureekaa.game.GameColour;
-import com.dr01d3k4.iroirobureekaa.game.gamemode.GameMode;
+import com.dr01d3k4.iroirobureekaa.input.Input;
 import com.dr01d3k4.iroirobureekaa.input.TouchEvent;
 import com.dr01d3k4.iroirobureekaa.render.Graphics;
 
@@ -43,7 +43,12 @@ public class MainMenuScreen extends Screen {
 		
 		final String[] words = title.split(" ");
 		int longestWord = words[0].length();
-		for (final String word : words) {
+		
+		int length = words.length;
+		String word;
+		
+		for (int i = 0; i < length; i += 1) {
+			word = words[i];
 			if (word.length() > longestWord) {
 				longestWord = word.length();
 			}
@@ -51,7 +56,8 @@ public class MainMenuScreen extends Screen {
 		
 		texts = new String[title.length()];
 		titleCharacterHeight = (int) ((CANVAS_HEIGHT / longestWord) * 0.8);
-		for (int i = 0; i < title.length(); i++) {
+		length = title.length();
+		for (int i = 0; i < length; i += 1) {
 			texts[i] = title.substring(i, i + 1);
 		}
 		titleFontSize = (new Text("ロ", 0, 0, titleCharacterHeight, titleCharacterHeight)).textSize;
@@ -64,7 +70,8 @@ public class MainMenuScreen extends Screen {
 	
 	
 	public void startGame() {
-		mainActivity.changeScreen(new GameScreen(mainActivity, GameMode.TIMED));
+		mainActivity.changeScreen(new GameModeSelectScreen(mainActivity));
+		
 	}
 	
 	
@@ -77,7 +84,8 @@ public class MainMenuScreen extends Screen {
 		int x;
 		int y;
 		boolean down;
-		for (int pointer = 0; pointer < 10; pointer++) {
+		int length = Input.MAX_TOUCHPOINTS;
+		for (int pointer = 0; pointer < length; pointer += 1) {
 			x = input.getTouchX(pointer);
 			y = input.getTouchY(pointer);
 			down = input.isTouchDown(pointer);
@@ -89,7 +97,8 @@ public class MainMenuScreen extends Screen {
 		}
 		
 		TouchEvent touchEvent;
-		for (int i = 0; i < touchEvents.size(); i++) {
+		length = touchEvents.size();
+		for (int i = 0; i < length; i += 1) {
 			touchEvent = touchEvents.get(i);
 			x = touchEvent.x;
 			y = touchEvent.y;
@@ -108,7 +117,7 @@ public class MainMenuScreen extends Screen {
 	
 	@Override
 	public void render(final float deltaTime) {
-		final Graphics graphics = mainActivity.getGraphics();
+		final Graphics graphics = getGraphics();
 		final Paint paint = graphics.getPaint();
 		graphics.clear(Color.WHITE);
 		
@@ -118,7 +127,10 @@ public class MainMenuScreen extends Screen {
 		int x = (int) (CANVAS_WIDTH * 0.1);
 		int y = 0;
 		
-		for (final String text : texts) {
+		int length = texts.length;
+		String text;
+		for (int i = 0; i < length; i += 1) {
+			text = texts[i];
 			y += titleCharacterHeight;
 			
 			if (text.equals(" ")) {

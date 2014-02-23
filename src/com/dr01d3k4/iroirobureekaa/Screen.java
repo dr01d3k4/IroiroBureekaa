@@ -3,6 +3,7 @@ package com.dr01d3k4.iroirobureekaa;
 
 
 import com.dr01d3k4.iroirobureekaa.input.Input;
+import com.dr01d3k4.iroirobureekaa.render.Graphics;
 
 
 
@@ -61,4 +62,10 @@ public abstract class Screen {
 	
 	
 	public void onBackPressed() {}
+	
+	
+	
+	public Graphics getGraphics() {
+		return mainActivity.getGraphics();
+	}
 }

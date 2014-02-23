@@ -335,6 +335,7 @@ containing a value of this type.
         public static final int gamehelper_license_failed=0x7f06001c;
         public static final int gamehelper_sign_in_failed=0x7f06001a;
         public static final int gamehelper_unknown_error=0x7f06001d;
+        public static final int infinite_mode=0x7f060034;
         public static final int leaving=0x7f060028;
         public static final int loading=0x7f060030;
         public static final int next=0x7f060027;
@@ -349,6 +350,7 @@ containing a value of this type.
         public static final int sharing_score=0x7f060032;
         public static final int sign_out=0x7f060031;
         public static final int sure_leave=0x7f060029;
+        public static final int timed_mode=0x7f060035;
         public static final int yes=0x7f06002a;
     }
     public static final class styleable {

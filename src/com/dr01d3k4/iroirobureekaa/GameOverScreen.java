@@ -11,6 +11,7 @@ import android.graphics.Paint;
 
 
 import com.dr01d3k4.iroirobureekaa.game.GameColour;
+import com.dr01d3k4.iroirobureekaa.input.Input;
 import com.dr01d3k4.iroirobureekaa.input.TouchEvent;
 import com.dr01d3k4.iroirobureekaa.render.Graphics;
 
@@ -81,7 +82,8 @@ public class GameOverScreen extends Screen {
 		int y;
 		boolean down;
 		
-		for (int pointer = 0; pointer < 10; pointer++) {
+		int length = Input.MAX_TOUCHPOINTS;
+		for (int pointer = 0; pointer < length; pointer += 1) {
 			x = input.getTouchX(pointer);
 			y = input.getTouchY(pointer);
 			down = input.isTouchDown(pointer);
@@ -98,7 +100,8 @@ public class GameOverScreen extends Screen {
 		}
 		
 		TouchEvent touchEvent;
-		for (int i = 0; i < touchEvents.size(); i++) {
+		length = touchEvents.size();
+		for (int i = 0; i < length; i += 1) {
 			touchEvent = touchEvents.get(i);
 			x = touchEvent.x;
 			y = touchEvent.y;
@@ -124,7 +127,7 @@ public class GameOverScreen extends Screen {
 	
 	@Override
 	public void render(final float deltaTime) {
-		final Graphics graphics = mainActivity.getGraphics();
+		final Graphics graphics = getGraphics();
 		final Paint paint = graphics.getPaint();
 		graphics.clear(GameColour.UI_LIGHT);
 		gameOverTextObject.render(graphics, paint);

@@ -7,10 +7,15 @@ import java.util.List;
 
 
 
+import com.dr01d3k4.iroirobureekaa.CellPool;
+import com.dr01d3k4.iroirobureekaa.FallingPiecePool;
+
+
+
 public class Grid {
 	public static final int WIDTH = 15; // 14;
 	public static final int HEIGHT = 22; // 22;
-	public static final int START_ROWS = (int) Math.ceil(HEIGHT / 5.0f);
+	public static final int START_ROWS = 6; // (int) Math.ceil(HEIGHT / 4.0f);
 	
 	public final int width;
 	public final int height;
@@ -35,8 +40,8 @@ public class Grid {
 	
 	
 	public void init() {
-		for (int x = 0; x < width; x++) {
-			for (int y = 0; y < height; y++) {
+		for (int x = 0; x < width; x += 1) {
+			for (int y = 0; y < height; y += 1) {
 				grid[x][y] = GameColour.NONE;
 				markedForClear[x][y] = false;
 				lookedAt[x][y] = false;
@@ -156,8 +161,8 @@ public class Grid {
 	
 	
 	public void clearMarkedForClear() {
-		for (int x = 0; x < width; x++) {
-			for (int y = 0; y < height; y++) {
+		for (int x = 0; x < width; x += 1) {
+			for (int y = 0; y < height; y += 1) {
 				markedForClear[x][y] = false;
 			}
 		}
@@ -186,8 +191,8 @@ public class Grid {
 	
 	
 	public void clearLookedAt() {
-		for (int x = 0; x < width; x++) {
-			for (int y = 0; y < height; y++) {
+		for (int x = 0; x < width; x += 1) {
+			for (int y = 0; y < height; y += 1) {
 				lookedAt[x][y] = false;
 			}
 		}
@@ -195,44 +200,45 @@ public class Grid {
 	
 	
 	
-	private void findFloodClearCellsRecursive(final int x, final int y, final int colour, final List<Cell> cells) {
+	private void findFloodClearCellsRecursive(final int x, final int y, final int colour, final List<Cell> cells,
+		CellPool cellPool) {
 		if (isColourAt(x, y, colour) && !hasBeenLookedAt(x, y)) {
-			cells.add(new Cell(x, y, colour));
+			cells.add(cellPool.newObject(x, y, colour));
 			setLookedAt(x, y, true);
-			findFloodClearCellsRecursive(x, y - 1, colour, cells);
-			findFloodClearCellsRecursive(x + 1, y, colour, cells);
-			findFloodClearCellsRecursive(x, y + 1, colour, cells);
-			findFloodClearCellsRecursive(x - 1, y, colour, cells);
+			findFloodClearCellsRecursive(x, y - 1, colour, cells, cellPool);
+			findFloodClearCellsRecursive(x + 1, y, colour, cells, cellPool);
+			findFloodClearCellsRecursive(x, y + 1, colour, cells, cellPool);
+			findFloodClearCellsRecursive(x - 1, y, colour, cells, cellPool);
 		}
 	}
 	
 	
 	
-	public List<Cell> findFloodClearCells(final int x, final int y, final int colour) {
+	public List<Cell> findFloodClearCells(final int x, final int y, final int colour, CellPool cellPool) {
 		final List<Cell> cells = new ArrayList<Cell>();
 		clearLookedAt();
-		findFloodClearCellsRecursive(x, y, colour, cells);
+		findFloodClearCellsRecursive(x, y, colour, cells, cellPool);
 		clearLookedAt();
 		return cells;
 	}
 	
 	
 	
-	public List<FallingPiece> findCellsToFall() {
+	public List<FallingPiece> findCellsToFall(FallingPiecePool fallingPiecePool) {
 		final List<FallingPiece> fallingPieces = new ArrayList<FallingPiece>();
 		
 		boolean shouldFall = false;
-		for (int x = 0; x < width; x++) {
+		for (int x = 0; x < width; x += 1) {
 			shouldFall = isEmptyAt(x, height - 1);
 			
-			for (int y = height - 2; y >= 0; y--) {
+			for (int y = height - 2; y >= 0; y -= 1) {
 				if (isEmptyAt(x, y)) {
 					shouldFall = true;
 				} else {
 					if (shouldFall) {
 						// TODO: Maybe use previousWasEmpty to optimise this?
-						fallingPieces.add(new FallingPiece(x, y, getColourAt(x, y),
-							isEmptyAt(x, y + 1)));
+						fallingPieces.add(fallingPiecePool
+							.newObject(x, y, getColourAt(x, y), isEmptyAt(x, y + 1)));
 					}
 				}
 			}
@@ -244,7 +250,10 @@ public class Grid {
 	
 	
 	public void setFallingPiecesEmpty(final List<FallingPiece> fallingPieces) {
-		for (final FallingPiece fallingPiece : fallingPieces) {
+		int length = fallingPieces.size();
+		FallingPiece fallingPiece;
+		for (int i = 0; i < length; i += 1) {
+			fallingPiece = fallingPieces.get(i);
 			setEmptyAt(fallingPiece.getRoundedX(), fallingPiece.getRoundedY());
 		}
 	}

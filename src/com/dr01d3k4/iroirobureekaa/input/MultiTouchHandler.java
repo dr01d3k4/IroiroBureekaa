@@ -57,7 +57,8 @@ public class MultiTouchHandler implements TouchHandler {
 			final int pointerCount = event.getPointerCount();
 			TouchEvent touchEvent;
 			
-			for (int i = 0; i < Input.MAX_TOUCHPOINTS; i++) {
+			int length = Input.MAX_TOUCHPOINTS;
+			for (int i = 0; i < length; i += 1) {
 				if (i >= pointerCount) {
 					isTouched[i] = false;
 					id[i] = -1;
@@ -161,8 +162,8 @@ public class MultiTouchHandler implements TouchHandler {
 	@Override
 	public List<TouchEvent> getTouchEvents() {
 		synchronized (this) {
-			final int len = touchEvents.size();
-			for (int i = 0; i < len; i++) {
+			final int length = touchEvents.size();
+			for (int i = 0; i < length; i += 1) {
 				touchEventPool.free(touchEvents.get(i));
 			}
 			touchEvents.clear();
@@ -175,7 +176,8 @@ public class MultiTouchHandler implements TouchHandler {
 	
 	
 	private int getIndex(final int pointerId) {
-		for (int i = 0; i < Input.MAX_TOUCHPOINTS; i++) {
+		int length = Input.MAX_TOUCHPOINTS;
+		for (int i = 0; i < length; i += 1) {
 			if (id[i] == pointerId) {
 				return i;
 			}
@@ -189,7 +191,8 @@ public class MultiTouchHandler implements TouchHandler {
 	public void clearTouches() {
 		touchEvents.clear();
 		touchEventsBuffer.clear();
-		for (int i = 0; i < Input.MAX_TOUCHPOINTS; i++) {
+		int length = Input.MAX_TOUCHPOINTS;
+		for (int i = 0; i < length; i += 1) {
 			isTouched[i] = false;
 			touchX[i] = 0;
 			touchX[i] = 0;

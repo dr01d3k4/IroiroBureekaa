@@ -8,8 +8,8 @@ import java.util.Random;
 
 
 
-import com.dr01d3k4.iroirobureekaa.Pool;
-import com.dr01d3k4.iroirobureekaa.Pool.PoolObjectFactory;
+import com.dr01d3k4.iroirobureekaa.CellPool;
+import com.dr01d3k4.iroirobureekaa.FallingPiecePool;
 
 
 
@@ -28,39 +28,40 @@ public class GameWorld {
 	
 	private final Random random;
 	
-	private static final float NEW_ROW_SLIDE_IN_TIME = 0.17f; // 0.14f;
+	private static final float NEW_ROW_SLIDE_IN_TIME = 0.2f; // 0.14f;
 	public float newRowSlideIn = 0;
 	public int[] nextRow;
 	public int[] newRow;
 	private int addedRows = 0;
 	private int startingRows = 0;
 	
-	private static final int NEW_ROW_BASE_TIME = 6;
-	private static final int NEW_ROW_RANDOM_TIME = 8;
+	private static final float NEW_ROW_BASE_TIME = 6.5f;
+	private static final float NEW_ROW_RANDOM_TIME = 6;
 	private float newRowTime = 0;
 	private float newRowCumulativeTime = 0;
 	
-	public Pool<FallingPiece> fallingPiecesPool;
+	public final FallingPiecePool fallingPiecePool;
 	public List<FallingPiece> fallingPieces;
 	public final List<FallingPiece> landedPieces;
+	public final CellPool cellPool;
 	public List<Cell> floodClearLocations;
 	public final List<Cell> preClearedList;
 	
-	private final float PLAYER_FALL_TIME = 0.166f; // 0.15f;
-	private final float PLAYER_FAST_FALL_TIME = 0.048f; // 0.063f;
-	private final float PLAYER_HORIZONTAL_MOVE_TIME = 0.081f; // 0.092f;
+	private final float PLAYER_FALL_TIME = 0.165f; // 0.15f;
+	private final float PLAYER_FAST_FALL_TIME = 0.052f; // 0.048xf;
+	private final float PLAYER_HORIZONTAL_MOVE_TIME = 0.085f; // 0.081f;
 	private final float PLAYER_START_Y = (float) -0.8 / PLAYER_FALL_TIME;
 	public int playerHorizontalTarget;
 	private boolean playerFastFall = false;
 	public int nextFallingPieceColour;
 	
-	private final float PRE_CLEAR_TIME = 0.06f;
+	private final float PRE_CLEAR_TIME = 0.08f;
 	private float preClearCumulativeTime = 0;
 	
-	private final float FINAL_CLEAR_TIME = 0.35f;
+	private final float FINAL_CLEAR_TIME = 0.4f;
 	private float finalClearCumulativeTime = 0;
 	
-	private final float GAP_FILL_TIME = 0.11f;
+	private final float GAP_FILL_TIME = 0.1f;
 	
 	private static final int MIN_GROUP_SIZE = 3;
 	private static final int WILD_COLOUR_MULTIPLIER_MINIMUM = 3;
@@ -77,20 +78,14 @@ public class GameWorld {
 		grid = new Grid(this.width, this.height);
 		random = new Random();
 		
-		newRowTime = NEW_ROW_BASE_TIME + random.nextInt(NEW_ROW_RANDOM_TIME);
+		newRowTime = generateNewRowTime();
 		startingRows = Grid.START_ROWS;
 		
-		// TODO: Finish changing it to use a pool
-		@SuppressWarnings ("unused")
-		final PoolObjectFactory<FallingPiece> fallingPieceFactory = new PoolObjectFactory<FallingPiece>() {
-			@Override
-			public FallingPiece createObject() {
-				return new FallingPiece();
-			}
-		};
-		
+		fallingPiecePool = new FallingPiecePool(width * height);
 		fallingPieces = new ArrayList<FallingPiece>();
 		landedPieces = new ArrayList<FallingPiece>();
+		
+		cellPool = new CellPool(width * height);
 		floodClearLocations = new ArrayList<Cell>();
 		preClearedList = new ArrayList<Cell>();
 		
@@ -99,6 +94,12 @@ public class GameWorld {
 		
 		nextRow = generateNextRow();
 		newRow = nextRow;
+	}
+	
+	
+	
+	private float generateNewRowTime() {
+		return NEW_ROW_BASE_TIME + (random.nextFloat() * NEW_ROW_RANDOM_TIME);
 	}
 	
 	
@@ -136,8 +137,8 @@ public class GameWorld {
 	
 	private void changeState(final GameState newState, final boolean goingBack, final boolean forcePause) {
 		if ((newState == GameState.PLAYER_FALLING) || (newState == GameState.GAP_FILL_FALL)) {
-			for (int x = 0; x < width; x++) {
-				for (int y = 0; y < height; y++) {
+			for (int x = 0; x < width; x += 1) {
+				for (int y = 0; y < height; y += 1) {
 					grid.setCellWorth(x, y, GameColour.getColourWorth(grid.getColourAt(x, y)));
 				}
 			}
@@ -155,7 +156,7 @@ public class GameWorld {
 			if (!goingBack && (newRowCumulativeTime >= newRowTime)
 				&& (newState == GameState.PLAYER_FALLING)) {
 				newRowCumulativeTime = 0;
-				newRowTime = NEW_ROW_BASE_TIME + random.nextInt(NEW_ROW_RANDOM_TIME);
+				newRowTime = generateNewRowTime();
 				changeState(GameState.ADDING_NEW_ROW);
 			} else {
 				state = newState;
@@ -255,21 +256,21 @@ public class GameWorld {
 		newRowSlideIn += deltaTime / NEW_ROW_SLIDE_IN_TIME;
 		
 		if (newRowSlideIn >= 1) {
-			for (int x = 0; x < width; x++) {
+			for (int x = 0; x < width; x += 1) {
 				if (grid.isSolidAt(x, 0)) {
 					changeState(GameState.LOST);
 					return;
 				}
 				
-				for (int y = 0; y < (height - 1); y++) {
+				for (int y = 0; y < (height - 1); y += 1) {
 					grid.setColourAt(x, y, grid.getColourAt(x, y + 1));
 				}
 				
 				grid.setColourAt(x, height - 1, newRow[x]);
 			}
 			
-			for (int x = 0; x < width; x++) {
-				for (int y = 0; y < height; y++) {
+			for (int x = 0; x < width; x += 1) {
+				for (int y = 0; y < height; y += 1) {
 					grid.setCellWorth(x, y, GameColour.getColourWorth(grid.getColourAt(x, y)));
 				}
 			}
@@ -286,7 +287,7 @@ public class GameWorld {
 	
 	private int[] generateNextRow() {
 		final int[] row = new int[width];
-		for (int i = 0; i < row.length; i++) {
+		for (int i = 0; i < width; i += 1) {
 			row[i] = GameColour.randomColour(random);
 		}
 		return row;
@@ -295,6 +296,8 @@ public class GameWorld {
 	
 	
 	private void updateStatePlayerFalling(final float deltaTime) {
+		final FallingPiece playerPiece;
+		
 		if (fallingPieces.size() == 0) {
 			grid.clearMarkedForClear();
 			
@@ -305,28 +308,31 @@ public class GameWorld {
 				nextFallingPieceColour = GameColour.randomColour(random);
 			}
 			
-			fallingPieces.add(new FallingPiece((float) Math.floor(width / 2), PLAYER_START_Y, newColour,
-				true));
-			playerHorizontalTarget = fallingPieces.get(0).getRoundedX();
+			playerPiece = fallingPiecePool
+				.newObject((float) Math.floor(width / 2), PLAYER_START_Y, newColour, true);
+			
+			fallingPieces.add(playerPiece);
+			playerHorizontalTarget = playerPiece.getRoundedX();
+		} else {
+			playerPiece = fallingPieces.get(0);
 		}
 		
 		multiplier = 0;
 		
-		final FallingPiece fallingPiece = fallingPieces.get(0);
-		
-		attemptMovePlayerHorizontal(fallingPiece, deltaTime);
+		attemptMovePlayerHorizontal(playerPiece, deltaTime);
 		
 		float fallSpeed = PLAYER_FALL_TIME;
-		if (playerFastFall && (fallingPiece.getRoundedY() >= -1)) {
+		if (playerFastFall && (playerPiece.getRoundedY() >= -1)) {
 			fallSpeed = PLAYER_FAST_FALL_TIME;
 		}
 		
-		final boolean moved = attemptMoveFallingPiece(fallingPiece, 0, deltaTime / fallSpeed);
+		final boolean moved = attemptMoveFallingPiece(playerPiece, 0, deltaTime / fallSpeed);
 		if (!moved) {
-			if (!handleFallingPieceCollision(fallingPiece)) {
+			if (!handleFallingPieceCollision(playerPiece)) {
 				return;
 			}
 			
+			//  fallingPiecePool.free(playerPiece);
 			fallingPieces.clear();
 		}
 		
@@ -349,7 +355,7 @@ public class GameWorld {
 			
 			final int length = landedPieces.size();
 			FallingPiece landedPiece;
-			for (int i = 0; i < length; i++) {
+			for (int i = 0; i < length; i += 1) {
 				landedPiece = landedPieces.get(i);
 				
 				x = landedPiece.getRoundedX();
@@ -368,7 +374,7 @@ public class GameWorld {
 							newColour = colour;
 						}
 						
-						final List<Cell> cells = grid.findFloodClearCells(x, y, newColour);
+						final List<Cell> cells = grid.findFloodClearCells(x, y, newColour, cellPool);
 						
 						if (cells.size() >= MIN_GROUP_SIZE) {
 							if (colour != GameColour.WILD) {
@@ -390,6 +396,8 @@ public class GameWorld {
 						}
 					}
 				}
+				
+				fallingPiecePool.free(landedPiece);
 			}
 		}
 		
@@ -413,7 +421,7 @@ public class GameWorld {
 		while (preClearCumulativeTime >= PRE_CLEAR_TIME) {
 			final int length = floodClearLocations.size();
 			Cell cell;
-			for (int i = 0; i < length; i++) {
+			for (int i = 0; i < length; i += 1) {
 				cell = floodClearLocations.get(i);
 				scoreChange += grid.getCellWorth(cell.getX(), cell.getY()) * multiplier;
 			}
@@ -436,9 +444,10 @@ public class GameWorld {
 		if (finalClearCumulativeTime > FINAL_CLEAR_TIME) {
 			final int length = preClearedList.size();
 			Cell cell;
-			for (int i = 0; i < length; i++) {
+			for (int i = 0; i < length; i += 1) {
 				cell = preClearedList.get(i);
 				grid.setEmptyAt(cell.getX(), cell.getY());
+				cellPool.free(cell);
 			}
 			
 			preClearedList.clear();
@@ -452,7 +461,7 @@ public class GameWorld {
 	private void updateGapFillFall(final float deltaTime) {
 		if (fallingPieces.size() == 0) {
 			floodClearLocations.clear();
-			fallingPieces = grid.findCellsToFall();
+			fallingPieces = grid.findCellsToFall(fallingPiecePool);
 			grid.setFallingPiecesEmpty(fallingPieces);
 			grid.clearMarkedForClear();
 		}
@@ -462,7 +471,7 @@ public class GameWorld {
 		
 		final int length = fallingPieces.size();
 		FallingPiece fallingPiece;
-		for (int i = 0; i < length; i++) {
+		for (int i = 0; i < length; i += 1) {
 			fallingPiece = fallingPieces.get(i);
 			moved = attemptMoveFallingPiece(fallingPiece, 0, deltaTime / GAP_FILL_TIME);
 			
@@ -470,6 +479,8 @@ public class GameWorld {
 				if (!handleFallingPieceCollision(fallingPiece)) {
 					return;
 				}
+				
+				// fallingPiecePool.free(fallingPiece);
 			} else {
 				newFallingPieces.add(fallingPiece);
 			}
@@ -621,7 +632,7 @@ public class GameWorld {
 				
 				for (int x = startX; (dx <= 0) ? (x <= endX) : (x >= endX); x += incX) {
 					for (int y = (int) Math.floor(fallingPiece.y); y < (Math.ceil(fallingPiece.y
-						+ dy) + 1); y++) {
+						+ dy) + 1); y += 1) {
 						if (grid.isSolidAt(x, y)) {
 							collision = true;
 							collisionX = x;
@@ -666,7 +677,7 @@ public class GameWorld {
 	
 	private void startFloodClearAt(final int x, final int y, final int colour, final List<Cell> floodClearList) {
 		if (grid.isColourAt(x, y, colour) && !grid.hasBeenLookedAt(x, y)) {
-			floodClearList.add(new Cell(x, y, colour));
+			floodClearList.add(cellPool.newObject(x, y, colour));
 			grid.setLookedAt(x, y, true);
 		}
 	}
@@ -684,7 +695,7 @@ public class GameWorld {
 		
 		final int length = floodClearList.size();
 		Cell cell;
-		for (int i = 0; i < length; i++) {
+		for (int i = 0; i < length; i += 1) {
 			cell = floodClearList.get(i);
 			
 			x = cell.getX();
@@ -715,7 +726,8 @@ public class GameWorld {
 	private void markCellsForClear(final List<Cell> cells) {
 		final int length = cells.size();
 		Cell cell;
-		for (int i = 0; i < length; i++) {
+		
+		for (int i = 0; i < length; i += 1) {
 			cell = cells.get(i);
 			grid.setMarkedForClearAt(cell.getX(), cell.getY(), true);
 		}
@@ -724,13 +736,14 @@ public class GameWorld {
 	
 	
 	public int getHighestBlock() {
-		for (int y = 0; y < height; y++) {
-			for (int x = 0; x < width; x++) {
+		for (int y = 0; y < height; y += 1) {
+			for (int x = 0; x < width; x += 1) {
 				if (grid.isSolidAt(x, y)) {
 					return y;
 				}
 			}
 		}
+		
 		return height - 1;
 	}
 	

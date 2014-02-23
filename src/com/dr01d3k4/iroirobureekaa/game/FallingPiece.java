@@ -10,11 +10,13 @@ public class FallingPiece {
 	
 	
 	
-	public FallingPiece() {}
-	
-	
-	
 	public FallingPiece(final float x, final float y, final int colour, final boolean canStartClear) {
+		set(x, y, colour, canStartClear);
+	}
+	
+	
+	
+	public void set(float x, float y, int colour, boolean canStartClear) {
 		this.x = x;
 		this.y = y;
 		this.colour = colour;
@@ -22,30 +24,6 @@ public class FallingPiece {
 	}
 	
 	
-	
-	//	public void setX(final float x) {
-	//		this.x = x;
-	//	}
-	//	
-	//	
-	//	
-	//	public float getX() {
-	//		return x;
-	//	}
-	//	
-	//	
-	//	
-	//	public void setY(final float y) {
-	//		this.y = y;
-	//	}
-	//	
-	//	
-	//	
-	//	public float getY() {
-	//		return y;
-	//	}
-	//	
-	//	
 	
 	public int getRoundedX() {
 		return Math.round(x);
@@ -56,14 +34,4 @@ public class FallingPiece {
 	public int getRoundedY() {
 		return Math.round(y);
 	}
-	
-	//	public int getColour() {
-	//		return colour;
-	//	}
-	//	
-	//	
-	//	
-	//	public boolean canStartClear() {
-	//		return startClear;
-	//	}
 }

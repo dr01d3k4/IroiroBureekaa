@@ -104,6 +104,7 @@ int string gamehelper_app_misconfigured 0x7f06001b
 int string gamehelper_license_failed 0x7f06001c
 int string gamehelper_sign_in_failed 0x7f06001a
 int string gamehelper_unknown_error 0x7f06001d
+int string infinite_mode 0x7f060034
 int string leaving 0x7f060028
 int string loading 0x7f060030
 int string next 0x7f060027
@@ -118,6 +119,7 @@ int string share 0x7f060033
 int string sharing_score 0x7f060032
 int string sign_out 0x7f060031
 int string sure_leave 0x7f060029
+int string timed_mode 0x7f060035
 int string yes 0x7f06002a
 int[] styleable AdsAttrs { 0x7f010000, 0x7f010001, 0x7f010002 }
 int styleable AdsAttrs_adSize 0

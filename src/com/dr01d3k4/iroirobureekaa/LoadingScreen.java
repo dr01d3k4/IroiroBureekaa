@@ -44,9 +44,8 @@ public class LoadingScreen extends Screen {
 			Assets.blocks = graphics.newPixmap("blocks.png", PixmapFormat.RGB565);
 			
 			mainActivity.gameData = Settings.load(mainActivity.getFileIO());
-			android.util.Log
-				.d("Loaded sound enabled", Boolean.toString(mainActivity.gameData.soundEnabled));
-			android.util.Log.d("Loaded highscores", mainActivity.gameData.highscoresToString());
+			// android.util.Log.d("Loaded sound enabled", Boolean.toString(mainActivity.gameData.soundEnabled));
+			// android.util.Log.d("Loaded highscores", mainActivity.gameData.highscoresToString());
 			
 			loaded = true;
 		}
@@ -62,7 +61,7 @@ public class LoadingScreen extends Screen {
 	
 	@Override
 	public void render(final float deltaTime) {
-		final Graphics graphics = mainActivity.getGraphics();
+		final Graphics graphics = getGraphics();
 		graphics.clear(Color.WHITE);
 		loadingText.render(graphics, graphics.getPaint());
 	}
