@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.Config;
+import android.media.AudioManager;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
 import android.view.View;
@@ -16,6 +17,8 @@ import android.widget.Button;
 
 
 
+import com.dr01d3k4.iroirobureekaa.audio.Audio;
+import com.dr01d3k4.iroirobureekaa.audio.Sound;
 import com.dr01d3k4.iroirobureekaa.input.Input;
 import com.dr01d3k4.iroirobureekaa.render.Graphics;
 import com.dr01d3k4.iroirobureekaa.render.RenderView;
@@ -27,7 +30,7 @@ import com.google.example.games.basegameutils.BaseGameActivity;
 
 
 
-public class IroiroBureekaa extends BaseGameActivity implements OnClickListener {
+public final class IroiroBureekaa extends BaseGameActivity implements OnClickListener {
 	private static final boolean DEBUG_BUILD = true;
 	public int WINDOW_WIDTH = 0;
 	public int WINDOW_HEIGHT = 0;
@@ -40,11 +43,15 @@ public class IroiroBureekaa extends BaseGameActivity implements OnClickListener 
 	private Graphics graphics;
 	private FileIO fileIO;
 	private Input input;
+	private Audio audio;
 	private Screen screen;
 	public GameData gameData;
 	
 	private SignInButton signInButton;
 	private Button signOutButton;
+	
+	public boolean okToUpdate = true;
+	private final boolean soundEnabled = true;
 	
 	
 	
@@ -58,6 +65,7 @@ public class IroiroBureekaa extends BaseGameActivity implements OnClickListener 
 		getWindow()
 			.setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
 		getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+		setVolumeControlStream(AudioManager.STREAM_MUSIC);
 		
 		super.onCreate(savedInstanceState);
 		
@@ -87,20 +95,34 @@ public class IroiroBureekaa extends BaseGameActivity implements OnClickListener 
 		graphics = new Graphics(getAssets(), frameBuffer);
 		fileIO = new FileIO(this);
 		input = new Input(this, renderView, SCALE_X, SCALE_Y);
+		audio = new Audio(this);
 		gameData = new GameData();
 		
-		changeScreen(new LoadingScreen(this));
+		final Intent intent = getIntent();
+		if (intent.getAction().equals(Intent.ACTION_MAIN)) {
+			changeScreen(new LoadingScreen(this));
+		} else {
+			Assets.loadAssets(this);
+			changeScreen(new MainMenuScreen(this));
+		}
 	}
 	
 	
 	
 	public void update(final float deltaTime) {
+		if (!okToUpdate) {
+			return;
+		}
 		screen.update(deltaTime);
 	}
 	
 	
 	
 	public void render(final float deltaTime) {
+		if (!okToUpdate) {
+			return;
+		}
+		
 		screen.render(deltaTime);
 	}
 	
@@ -110,8 +132,12 @@ public class IroiroBureekaa extends BaseGameActivity implements OnClickListener 
 	public void onResume() {
 		super.onResume();
 		
+		okToUpdate = false;
+		Assets.loadAssets(this);
+		screen.calculateSize();
 		renderView.resume();
 		screen.resume();
+		okToUpdate = true;
 	}
 	
 	
@@ -163,6 +189,20 @@ public class IroiroBureekaa extends BaseGameActivity implements OnClickListener 
 	
 	public FileIO getFileIO() {
 		return fileIO;
+	}
+	
+	
+	
+	public Audio getAudio() {
+		return audio;
+	}
+	
+	
+	
+	public void playSound(final Sound sound) {
+		if (soundEnabled) {
+			sound.play(Assets.SOUND_VOLUME);
+		}
 	}
 	
 	
@@ -241,5 +281,17 @@ public class IroiroBureekaa extends BaseGameActivity implements OnClickListener 
 			.format(resources.getString(R.string.sharing_score), score));
 		shareIntent.putExtra(Intent.EXTRA_SUBJECT, resources.getString(R.string.app_title));
 		startActivity(Intent.createChooser(shareIntent, resources.getString(R.string.share)));
+	}
+	
+	
+	
+	@Override
+	public void onStop() {
+		super.onStop();
+		android.util.Log.d("Stop", "Stop");
+		Assets.dispose();
+		if (screen != null) {
+			screen.dispose();
+		}
 	}
 }

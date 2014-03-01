@@ -17,7 +17,7 @@ import com.dr01d3k4.iroirobureekaa.Pool.PoolObjectFactory;
 
 
 
-public class SingleTouchHandler implements TouchHandler {
+public final class SingleTouchHandler implements TouchHandler {
 	private boolean isTouched;
 	private int touchX;
 	private int touchY;

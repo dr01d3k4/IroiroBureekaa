@@ -17,16 +17,16 @@ import com.dr01d3k4.iroirobureekaa.render.Graphics;
 
 
 
-public class GameOverScreen extends Screen {
+public final class GameOverScreen extends Screen {
 	private final int score;
 	private final int gameModeId;
 	
 	private Text gameOverTextObject;
 	private Text gameOverScoreTextObject;
 	
-	public Button gameOverPlayAgainButton;
-	public Button shareButton;
-	public Button gameOverQuitButton;
+	public TextButton gameOverPlayAgainButton;
+	public TextButton shareButton;
+	public TextButton gameOverQuitButton;
 	
 	
 	
@@ -35,8 +35,8 @@ public class GameOverScreen extends Screen {
 		this.score = score;
 		this.gameModeId = gameModeId;
 		
-		// mainActivity.gameData.onGameOver(world.getScore());
-		// mainActivity.saveGame();
+		mainActivity.gameData.onGameOver(score, gameModeId);
+		mainActivity.saveGame();
 	}
 	
 	
@@ -45,28 +45,35 @@ public class GameOverScreen extends Screen {
 	public void calculateSize() {
 		super.calculateSize();
 		
-		final int pausedButtonsX = (int) (CANVAS_WIDTH * 0.1);
-		final int pausedButtonsWidth = (int) (CANVAS_WIDTH * 0.8);
-		final int pausedButtonsY = (int) (CANVAS_HEIGHT * 0.5);
-		final int pausedButtonsHeight = (int) (CANVAS_HEIGHT * 0.08);
-		final int pausedButtonsMargin = (int) (CANVAS_HEIGHT * 0.05);
-		final int pausedTextY = (int) (CANVAS_HEIGHT * 0.1);
-		final int pausedTextHeight = (int) (CANVAS_HEIGHT * 0.15);
-		final int gameOverScoreY = (int) (CANVAS_HEIGHT * 0.3);
+		final int pausedButtonsWidth = getDimensionPixel(R.dimen.button_width);
+		final int pausedButtonsX = (CANVAS_WIDTH - pausedButtonsWidth) / 2;
+		final int pausedButtonsHeight = getDimensionPixel(R.dimen.button_height);
+		final int pausedButtonsMargin = getDimensionPixel(R.dimen.button_margin);
+		final int pausedButtonsY = CANVAS_HEIGHT - (3 * pausedButtonsMargin) - (3 * pausedButtonsHeight);
 		
-		gameOverPlayAgainButton = new Button(getString(R.string.game_over_play_again), pausedButtonsX,
+		//		final int pausedButtonsX = (int) (CANVAS_WIDTH * 0.1);
+		//		final int pausedButtonsWidth = (int) (CANVAS_WIDTH * 0.8);
+		//		final int pausedButtonsY = (int) (CANVAS_HEIGHT * 0.5);
+		//		final int pausedButtonsHeight = (int) (CANVAS_HEIGHT * 0.08);
+		//		final int pausedButtonsMargin = (int) (CANVAS_HEIGHT * 0.05);
+		final int pausedTextY = getDimensionPixel(R.dimen.title_text_y); // (int) (CANVAS_HEIGHT * 0.1);
+		final int pausedTextHeight = getDimensionPixel(R.dimen.title_text_height); // (int) (CANVAS_HEIGHT * 0.15);
+		final int gameOverScoreY = getDimensionPixel(R.dimen.game_over_score_text_y); // (int) (CANVAS_HEIGHT * 0.3);
+		final int gameOverScoreHeight = getDimensionPixel(R.dimen.game_over_score_text_height);
+		
+		gameOverPlayAgainButton = new TextButton(getString(R.string.game_over_play_again), pausedButtonsX,
 			pausedButtonsY, pausedButtonsWidth, pausedButtonsHeight);
-		shareButton = new Button(getString(R.string.share), pausedButtonsX, pausedButtonsY
+		shareButton = new TextButton(getString(R.string.share), pausedButtonsX, pausedButtonsY
 			+ pausedButtonsMargin + pausedButtonsHeight, pausedButtonsWidth, pausedButtonsHeight);
-		gameOverQuitButton = new Button(getString(R.string.game_over_quit_game), pausedButtonsX, pausedButtonsY
-			+ (2 * pausedButtonsMargin) + (2 * pausedButtonsHeight), pausedButtonsWidth,
+		gameOverQuitButton = new TextButton(getString(R.string.game_over_quit_game), pausedButtonsX,
+			pausedButtonsY + (2 * pausedButtonsMargin) + (2 * pausedButtonsHeight), pausedButtonsWidth,
 			pausedButtonsHeight);
 		
 		gameOverTextObject = new Text(getString(R.string.game_over), 0, pausedTextY, CANVAS_WIDTH,
-			(int) (pausedTextHeight * 0.8));
+			pausedTextHeight);
 		
 		gameOverScoreTextObject = new Text(String.format(getString(R.string.game_over_score), score), 0,
-			gameOverScoreY, CANVAS_WIDTH, (int) (CANVAS_HEIGHT * 0.08));
+			gameOverScoreY, CANVAS_WIDTH, gameOverScoreHeight);
 	}
 	
 	
@@ -82,32 +89,33 @@ public class GameOverScreen extends Screen {
 		int y;
 		boolean down;
 		
-		int length = Input.MAX_TOUCHPOINTS;
-		for (int pointer = 0; pointer < length; pointer += 1) {
+		for (int pointer = 0, length = Input.MAX_TOUCHPOINTS; pointer < length; pointer += 1) {
 			x = input.getTouchX(pointer);
 			y = input.getTouchY(pointer);
 			down = input.isTouchDown(pointer);
 			
-			if (down && gameOverPlayAgainButton.visible && gameOverPlayAgainButton.isOver(x, y)) {
-				gameOverPlayAgainButton.hovered = true;
-				
-			} else if (down && shareButton.visible && shareButton.isOver(x, y)) {
-				shareButton.hovered = true;
-				
-			} else if (down && gameOverQuitButton.visible && gameOverQuitButton.isOver(x, y)) {
-				gameOverQuitButton.hovered = true;
+			if (down) {
+				if (gameOverPlayAgainButton.visible && gameOverPlayAgainButton.isOver(x, y)) {
+					gameOverPlayAgainButton.hovered = true;
+					
+				} else if (shareButton.visible && shareButton.isOver(x, y)) {
+					shareButton.hovered = true;
+					
+				} else if (gameOverQuitButton.visible && gameOverQuitButton.isOver(x, y)) {
+					gameOverQuitButton.hovered = true;
+				}
 			}
 		}
 		
 		TouchEvent touchEvent;
-		length = touchEvents.size();
-		for (int i = 0; i < length; i += 1) {
+		for (int i = 0, length = touchEvents.size(); i < length; i += 1) {
 			touchEvent = touchEvents.get(i);
 			x = touchEvent.x;
 			y = touchEvent.y;
 			
 			if (touchEvent.type == TouchEvent.TOUCH_UP) {
 				if (gameOverPlayAgainButton.visible && gameOverPlayAgainButton.isOver(x, y)) {
+					mainActivity.playSound(Assets.buttonSelect);
 					mainActivity.changeScreen(new GameScreen(mainActivity, gameModeId));
 					return;
 					
@@ -116,6 +124,8 @@ public class GameOverScreen extends Screen {
 					return;
 					
 				} else if (gameOverQuitButton.visible && gameOverQuitButton.isOver(x, y)) {
+					
+					mainActivity.playSound(Assets.buttonSelect);
 					mainActivity.changeScreen(new MainMenuScreen(mainActivity));
 					return;
 				}

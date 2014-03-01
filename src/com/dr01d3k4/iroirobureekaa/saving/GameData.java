@@ -6,14 +6,23 @@ import java.io.Serializable;
 
 
 
-public class GameData implements Serializable {
+import com.dr01d3k4.iroirobureekaa.game.gamemode.GameMode;
+
+
+
+public final class GameData implements Serializable {
 	private static final long serialVersionUID = 1L;
 	
 	public boolean soundEnabled = false;
 	public final int MAX_HIGHSCORES = 10;
-	public int[] highscores = new int[] { };
+	public int[] infiniteHighscores = new int[] { };
+	public int[] timedHighscores = new int[] { };
 	public int totalScore = 0;
+	public int totalInfiniteScore = 0;
+	public int totalTimedScore = 0;
 	public int totalGames = 0;
+	public int totalInfiniteGames = 0;
+	public int totalTimedGames = 0;
 	
 	
 	
@@ -24,16 +33,18 @@ public class GameData implements Serializable {
 	
 	
 	public void clearHighscores() {
-		highscores = new int[] { };
+		infiniteHighscores = new int[] { };
+		timedHighscores = new int[] { };
 	}
 	
 	
 	
 	public String highscoresToString() {
 		String highscoreString = "{";
-		int length = highscores.length;
+		int length = infiniteHighscores.length;
 		for (int i = 0; i < length; i += 1) {
-			highscoreString += Integer.toString(highscores[i]) + ((i < highscores.length - 1) ? ", " : "");
+			highscoreString += Integer.toString(infiniteHighscores[i])
+				+ ((i < infiniteHighscores.length - 1) ? ", " : "");
 		}
 		highscoreString += "}";
 		return highscoreString;
@@ -41,10 +52,7 @@ public class GameData implements Serializable {
 	
 	
 	
-	public void onGameOver(int score) {
-		totalGames += 1;
-		totalScore += score;
-		
+	public void addScore(int score, int[] highscores) {
 		if ((highscores == null) || (highscores.length == 0)) {
 			highscores = new int[] {score};
 			
@@ -71,5 +79,27 @@ public class GameData implements Serializable {
 				highscores = newHighscores;
 			}
 		}
+	}
+	
+	
+	
+	public void onGameOver(int score, int gameModeId) {
+		if (gameModeId == GameMode.INFINITE) {
+			totalInfiniteScore += score;
+			totalInfiniteGames += 1;
+			addScore(score, infiniteHighscores);
+			
+		} else if (gameModeId == GameMode.TIMED) {
+			totalTimedScore += score;
+			totalTimedGames += 1;
+			addScore(score, timedHighscores);
+			
+		} else {
+			throw new IllegalArgumentException("Game mode not known");
+		}
+		
+
+		totalGames += 1;
+		totalScore += score;
 	}
 }

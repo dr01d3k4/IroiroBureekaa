@@ -13,7 +13,7 @@ import com.dr01d3k4.iroirobureekaa.render.Graphics;
 
 
 
-public class Text {
+public final class Text {
 	public String text;
 	public int x;
 	public int y;
@@ -45,6 +45,21 @@ public class Text {
 	}
 	
 	
+	
+	//	
+	//	
+	//	
+	//	public Text(final String text, final int x, final int y, final int maxWidth, final int maxHeight,
+	//		final Align align) {
+	//		this(text, x, y, maxWidth, maxHeight, align, false);
+	//	}
+	//	
+	//	
+	//	
+	//	public Text(final String text, final int x, final int y, final int maxWidth, final int maxHeight,
+	//		final boolean scale) {
+	//		this(text, x, y, maxWidth, maxHeight, Align.CENTER, scale);
+	//	}
 	
 	public void setText(final String text) {
 		this.text = text;
@@ -97,6 +112,8 @@ public class Text {
 		
 		textBaseline = bounds.bottom + ((maxHeight - textHeight) / 2);
 		textScaleX = (float) maxWidth / textWidth;
-		textScaleX = 1.0f;
+		if (textScaleX > 1f) {
+			textScaleX = 1.0f;
+		}
 	}
 }

@@ -2,7 +2,7 @@ package com.dr01d3k4.iroirobureekaa.game;
 
 
 
-public class Cell {
+public final class Cell {
 	private int x;
 	private int y;
 	private int colour;

@@ -20,7 +20,7 @@ import com.dr01d3k4.iroirobureekaa.Pool.PoolObjectFactory;
 
 
 @TargetApi (Build.VERSION_CODES.FROYO)
-public class MultiTouchHandler implements TouchHandler {
+public final class MultiTouchHandler implements TouchHandler {
 	private final boolean[] isTouched = new boolean[Input.MAX_TOUCHPOINTS];
 	private final int[] touchX = new int[Input.MAX_TOUCHPOINTS];
 	private final int[] touchY = new int[Input.MAX_TOUCHPOINTS];

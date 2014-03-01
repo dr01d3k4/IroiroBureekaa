@@ -13,7 +13,7 @@ import android.view.View;
 
 
 
-public class Input {
+public final class Input {
 	public static final int MAX_TOUCHPOINTS = 10;
 	private TouchHandler touchHandler;
 	

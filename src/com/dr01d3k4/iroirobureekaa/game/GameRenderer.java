@@ -18,7 +18,7 @@ import com.dr01d3k4.iroirobureekaa.render.Pixmap;
 
 
 
-public class GameRenderer {
+public final class GameRenderer {
 	private final GameScreen game;
 	private final int gridWidth;
 	private final int gridHeight;
@@ -34,7 +34,16 @@ public class GameRenderer {
 	
 	private final Text pausedTextObject;
 	
-	private final Pixmap blocks;
+	private Pixmap redBlock;
+	private Pixmap redLightBlock;
+	private Pixmap blueBlock;
+	private Pixmap blueLightBlock;
+	private Pixmap greenBlock;
+	private Pixmap greenLightBlock;
+	private Pixmap yellowBlock;
+	private Pixmap yellowLightBlock;
+	private Pixmap wildBlock;
+	private Pixmap wildLightBlock;
 	
 	
 	
@@ -58,48 +67,48 @@ public class GameRenderer {
 		pausedTextObject = new Text(game.getString(R.string.paused), 0, game.PAUSED_TEXT_Y, game.CANVAS_WIDTH,
 			game.PAUSED_TEXT_HEIGHT);
 		
-		blocks = Assets.blocks;
+		Graphics graphics = game.getGraphics();
+		
+		int i = game.IMAGE_CELL_SIZE;
+		int c = game.CELL_SIZE;
+		Pixmap textures = Assets.textures;
+		redBlock = graphics.clipAndScalePixmap(textures, 0, 0, i, i, c, c);
+		redLightBlock = graphics.clipAndScalePixmap(textures, i, 0, i, i, c, c);
+		blueBlock = graphics.clipAndScalePixmap(textures, 0, i, i, i, c, c);
+		blueLightBlock = graphics.clipAndScalePixmap(textures, i, i, i, i, c, c);
+		greenBlock = graphics.clipAndScalePixmap(textures, 0, 2 * i, i, i, c, c);
+		greenLightBlock = graphics.clipAndScalePixmap(textures, i, 2 * i, i, i, c, c);
+		yellowBlock = graphics.clipAndScalePixmap(textures, 0, 3 * i, i, i, c, c);
+		yellowLightBlock = graphics.clipAndScalePixmap(textures, i, 3 * i, i, i, c, c);
+		wildBlock = graphics.clipAndScalePixmap(textures, 0, 4 * i, i, i, c, c);
+		wildLightBlock = graphics.clipAndScalePixmap(textures, i, 4 * i, i, i, c, c);
 	}
 	
 	
 	
+	@SuppressWarnings ("unused")
 	private int[] colourToImageLocation(final int colour) {
 		int sourceX = 0;
 		int sourceY = 0;
 		
 		final int properColour = GameColour.getDarkerColour(colour);
 		
-		if (properColour == GameColour.WILD) {
-			sourceX = -1;
-			sourceY = -1;
-		} else if (properColour == GameColour.RED) {
-			if (GameColour.isLightColour(colour)) {
-				sourceX = game.IMAGE_CELL_SIZE;
-			} else {
-				sourceX = 0;
-			}
-			sourceY = 0;
-		} else if (properColour == GameColour.GREEN) {
-			if (GameColour.isLightColour(colour)) {
-				sourceX = 3 * game.IMAGE_CELL_SIZE;
-			} else {
-				sourceX = 2 * game.IMAGE_CELL_SIZE;
-			}
+		if (properColour == GameColour.RED) {
 			sourceY = 0;
 		} else if (properColour == GameColour.BLUE) {
-			if (GameColour.isLightColour(colour)) {
-				sourceX = game.IMAGE_CELL_SIZE;
-			} else {
-				sourceX = 0;
-			}
 			sourceY = game.IMAGE_CELL_SIZE;
+		} else if (properColour == GameColour.GREEN) {
+			sourceY = 2 * game.IMAGE_CELL_SIZE;
 		} else if (properColour == GameColour.YELLOW) {
-			if (GameColour.isLightColour(colour)) {
-				sourceX = 3 * game.IMAGE_CELL_SIZE;
-			} else {
-				sourceX = 2 * game.IMAGE_CELL_SIZE;
-			}
-			sourceY = game.IMAGE_CELL_SIZE;
+			sourceY = 3 * game.IMAGE_CELL_SIZE;
+		} else if (properColour == GameColour.WILD) {
+			sourceY = 4 * game.IMAGE_CELL_SIZE;
+		}
+		
+		if (GameColour.isLightColour(colour)) {
+			sourceX = game.IMAGE_CELL_SIZE;
+		} else {
+			sourceX = 0;
 		}
 		
 		return new int[] {sourceX, sourceY};
@@ -107,22 +116,36 @@ public class GameRenderer {
 	
 	
 	
-	private void renderCell(final Graphics graphics, final float drawX, final float drawY, final int width,
-		final int height, final int colour) {
-		final int x = (int) drawX;
-		final int y = (int) drawY;
-		
-		final int[] source = colourToImageLocation(colour);
-		
-		final int sourceWidth = game.IMAGE_CELL_SIZE;
-		final int sourceHeight = game.IMAGE_CELL_SIZE;
-		final int destinationWidth = width;
-		final int destinationHeight = height;
-		
-		if ((source[0] < 0) || (source[1] < 0)) {
-			graphics.drawRectangle(x, y, destinationWidth, destinationHeight, colour);
-		} else {
-			graphics.drawPixmap(blocks, x, y, source[0], source[1], sourceWidth, sourceHeight, destinationWidth, destinationHeight);
+	private Pixmap colourToPixmap(int colour) {
+		switch (colour) {
+			case GameColour.RED:
+				return redBlock;
+			case GameColour.LIGHT_RED:
+				return redLightBlock;
+				
+			case GameColour.BLUE:
+				return blueBlock;
+			case GameColour.LIGHT_BLUE:
+				return blueLightBlock;
+				
+			case GameColour.GREEN:
+				return greenBlock;
+			case GameColour.LIGHT_GREEN:
+				return greenLightBlock;
+				
+			case GameColour.YELLOW:
+				return yellowBlock;
+			case GameColour.LIGHT_YELLOW:
+				return yellowLightBlock;
+				
+			case GameColour.WILD:
+				return wildBlock;
+			case GameColour.LIGHT_WILD:
+				return wildLightBlock;
+				
+			default:
+				throw new IllegalArgumentException("Colour not known");
+				
 		}
 	}
 	
@@ -132,7 +155,17 @@ public class GameRenderer {
 		final int x = (int) Math.floor(cellX * game.CELL_SIZE);
 		final int y = (int) Math.floor(cellY * game.CELL_SIZE);
 		
-		renderCell(graphics, x, y, game.CELL_SIZE, game.CELL_SIZE, colour);
+		graphics.drawPixmap(colourToPixmap(colour), x, y);
+	}
+	
+	
+	
+	private void renderCell(final Graphics graphics, final float drawX, final float drawY, int width, int height,
+		final int colour) {
+		final int x = (int) drawX;
+		final int y = (int) drawY;
+		
+		graphics.drawPixmap(colourToPixmap(colour), x, y, width, height);
 	}
 	
 	
@@ -205,8 +238,10 @@ public class GameRenderer {
 		scoreTextObject.render(graphics, paint);
 		nextTextObject.render(graphics, paint);
 		
-		final int nextPieceSize = (int) (game.HEADER_HEIGHT * 0.4);
-		renderCell(graphics, nextCellX, (int) (game.HEADER_HEIGHT * 0.58), nextPieceSize, nextPieceSize, game.world.nextFallingPieceColour);
+		final int nextPieceSize = (int) (nextTextObject.maxHeight); //  - nextTextObject.textBaseline); // (int) (game.HEADER_HEIGHT * 0.4);
+		renderCell(graphics, nextCellX, nextTextObject.y,
+		// (int) (game.HEADER_HEIGHT * 0.54),
+		nextPieceSize, nextPieceSize, game.world.nextFallingPieceColour);
 		
 		game.pauseButton.render(graphics, paint);
 	}
@@ -255,5 +290,20 @@ public class GameRenderer {
 		} else if (game.isPaused()) {
 			renderPaused(graphics, paint);
 		}
+	}
+	
+	
+	
+	public void dispose() {
+		redBlock.dispose();
+		redLightBlock.dispose();
+		blueBlock.dispose();
+		blueLightBlock.dispose();
+		greenBlock.dispose();
+		greenLightBlock.dispose();
+		yellowBlock.dispose();
+		yellowLightBlock.dispose();
+		wildBlock.dispose();
+		wildLightBlock.dispose();
 	}
 }

@@ -8,7 +8,7 @@ import java.io.ObjectOutputStream;
 
 
 
-public class Settings {
+public final class Settings {
 	private static final String saveFilename = ".iroirobureekaa";
 	
 	

@@ -55,6 +55,12 @@ public abstract class Screen {
 	
 	
 	
+	public int getDimensionPixel(final int id) {
+		return mainActivity.getResources().getDimensionPixelSize(id);
+	}
+	
+	
+	
 	public boolean signInButtonsVisible() {
 		return false;
 	}

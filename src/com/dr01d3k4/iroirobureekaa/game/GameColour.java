@@ -10,7 +10,7 @@ import android.graphics.Color;
 
 
 
-public class GameColour {
+public final class GameColour {
 	public static final int NONE = Color.WHITE;
 	public static final int OUT_OF_BOUNDS = Color.BLACK;
 	

@@ -3,12 +3,14 @@ package com.dr01d3k4.iroirobureekaa.game.gamemode;
 
 
 import com.dr01d3k4.iroirobureekaa.GameScreen;
+import com.dr01d3k4.iroirobureekaa.R;
 
 
 
 public abstract class GameMode {
-	public static final int INFINITE = 0;
-	public static final int TIMED = 1;
+	public static final int TIMED = 0;
+	public static final int INFINITE = 1;
+	public static final int[] MODES = {TIMED, INFINITE};
 	
 	protected final GameScreen gameScreen;
 	
@@ -48,5 +50,29 @@ public abstract class GameMode {
 		}
 		
 		return gameMode;
+	}
+	
+	
+	
+	public static final int getTitle(final int id) {
+		int title;
+		
+		switch (id) {
+			case INFINITE: {
+				title = R.string.infinite_mode;
+				break;
+			}
+			
+			case TIMED: {
+				title = R.string.timed_mode;
+				break;
+			}
+			
+			default: {
+				throw new IllegalArgumentException("Id not recognised");
+			}
+		}
+		
+		return title;
 	}
 }

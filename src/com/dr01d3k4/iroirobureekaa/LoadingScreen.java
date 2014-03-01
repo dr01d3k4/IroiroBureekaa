@@ -7,16 +7,15 @@ import android.graphics.Color;
 
 
 import com.dr01d3k4.iroirobureekaa.render.Graphics;
-import com.dr01d3k4.iroirobureekaa.render.Pixmap.PixmapFormat;
 import com.dr01d3k4.iroirobureekaa.saving.Settings;
 
 
 
-public class LoadingScreen extends Screen {
+public final class LoadingScreen extends Screen {
 	private Text loadingText;
 	private boolean loaded = false;
 	private float time = 0;
-	private final float MIN_TIME = 1;
+	private final float MIN_TIME = 1f;
 	
 	
 	
@@ -40,12 +39,9 @@ public class LoadingScreen extends Screen {
 	@Override
 	public void update(final float deltaTime) {
 		if (!loaded) {
-			final Graphics graphics = mainActivity.getGraphics();
-			Assets.blocks = graphics.newPixmap("blocks.png", PixmapFormat.RGB565);
+			Assets.loadAssets(mainActivity);
 			
 			mainActivity.gameData = Settings.load(mainActivity.getFileIO());
-			// android.util.Log.d("Loaded sound enabled", Boolean.toString(mainActivity.gameData.soundEnabled));
-			// android.util.Log.d("Loaded highscores", mainActivity.gameData.highscoresToString());
 			
 			loaded = true;
 		}

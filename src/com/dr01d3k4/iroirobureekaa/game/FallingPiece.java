@@ -2,7 +2,7 @@ package com.dr01d3k4.iroirobureekaa.game;
 
 
 
-public class FallingPiece {
+public final class FallingPiece {
 	public float x;
 	public float y;
 	public int colour;

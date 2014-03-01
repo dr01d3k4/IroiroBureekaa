@@ -180,7 +180,20 @@ containing a value of this type.
         public static final int common_signin_btn_text_light=0x7f04000b;
     }
     public static final class dimen {
+        public static final int button_height=0x7f080007;
+        public static final int button_margin=0x7f080009;
+        public static final int button_width=0x7f080008;
+        public static final int game_bottom_row_height=0x7f080006;
+        public static final int game_header_height=0x7f080001;
+        public static final int game_on_screen_control_button_height=0x7f080005;
+        public static final int game_on_screen_control_height=0x7f080003;
+        public static final int game_on_screen_control_margin=0x7f080004;
+        public static final int game_over_score_text_height=0x7f08000d;
+        public static final int game_over_score_text_y=0x7f08000c;
+        public static final int pause_button_inset=0x7f080002;
         public static final int sign_in_button_margin=0x7f080000;
+        public static final int title_text_height=0x7f08000b;
+        public static final int title_text_y=0x7f08000a;
     }
     public static final class drawable {
         public static final int common_signin_btn_icon_dark=0x7f020000;
@@ -225,12 +238,13 @@ containing a value of this type.
     }
     public static final class integer {
         public static final int google_play_services_version=0x7f070000;
+        public static final int timed_game_length=0x7f070001;
     }
     public static final class layout {
         public static final int activity_iroiro_bureekaa=0x7f030000;
     }
     public static final class string {
-        public static final int app_id=0x7f060020;
+        public static final int app_id=0x7f06003b;
         public static final int app_name=0x7f06001e;
         public static final int app_title=0x7f06001f;
         /**   Title for notification shown when GooglePlayServices needs to be
@@ -327,31 +341,37 @@ containing a value of this type.
         /**  Long form sign-in button text [CHAR LIMIT=30] 
          */
         public static final int common_signin_button_text_long=0x7f060013;
-        public static final int game_over=0x7f06002c;
-        public static final int game_over_play_again=0x7f06002e;
-        public static final int game_over_quit_game=0x7f06002f;
-        public static final int game_over_score=0x7f06002d;
+        public static final int game_over=0x7f06002f;
+        public static final int game_over_play_again=0x7f060031;
+        public static final int game_over_quit_game=0x7f060032;
+        public static final int game_over_score=0x7f060030;
         public static final int gamehelper_app_misconfigured=0x7f06001b;
         public static final int gamehelper_license_failed=0x7f06001c;
         public static final int gamehelper_sign_in_failed=0x7f06001a;
         public static final int gamehelper_unknown_error=0x7f06001d;
-        public static final int infinite_mode=0x7f060034;
-        public static final int leaving=0x7f060028;
-        public static final int loading=0x7f060030;
-        public static final int next=0x7f060027;
-        public static final int no=0x7f06002b;
-        public static final int pause_quit_game=0x7f060026;
-        public static final int paused=0x7f060024;
-        public static final int play=0x7f060021;
-        public static final int resume=0x7f060025;
-        public static final int score=0x7f060022;
-        public static final int score_change=0x7f060023;
-        public static final int share=0x7f060033;
-        public static final int sharing_score=0x7f060032;
-        public static final int sign_out=0x7f060031;
-        public static final int sure_leave=0x7f060029;
-        public static final int timed_mode=0x7f060035;
-        public static final int yes=0x7f06002a;
+        public static final int infinite_mode=0x7f060039;
+        public static final int last_move=0x7f06003a;
+        public static final int leaving=0x7f06002b;
+        public static final int loading=0x7f060033;
+        public static final int main_menu_about=0x7f060024;
+        public static final int main_menu_help=0x7f060022;
+        public static final int main_menu_highscores=0x7f060021;
+        public static final int main_menu_play=0x7f060020;
+        public static final int main_menu_settings=0x7f060023;
+        public static final int next=0x7f06002a;
+        public static final int no=0x7f06002e;
+        public static final int pause_quit_game=0x7f060029;
+        public static final int paused=0x7f060027;
+        public static final int resume=0x7f060028;
+        public static final int score=0x7f060025;
+        public static final int score_change=0x7f060026;
+        public static final int select_mode=0x7f060037;
+        public static final int share=0x7f060036;
+        public static final int sharing_score=0x7f060035;
+        public static final int sign_out=0x7f060034;
+        public static final int sure_leave=0x7f06002c;
+        public static final int timed_mode=0x7f060038;
+        public static final int yes=0x7f06002d;
     }
     public static final class styleable {
         /** Attributes that can be used with a AdsAttrs.

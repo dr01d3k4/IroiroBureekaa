@@ -1,4 +1,4 @@
-package com.dr01d3k4.iroirobureekaa;
+package com.dr01d3k4.iroirobureekaa.game;
 
 
 
@@ -7,17 +7,16 @@ import java.util.List;
 
 
 
-import com.dr01d3k4.iroirobureekaa.game.FallingPiece;
 
 
 
-public class FallingPiecePool {
+public final class FallingPiecePool {
 	private final List<FallingPiece> freePieces;
 	private final int maxSize;
 	
 	
 	
-	public FallingPiecePool(int maxSize) {
+	public FallingPiecePool(final int maxSize) {
 		this.maxSize = maxSize;
 		freePieces = new ArrayList<FallingPiece>(maxSize);
 	}
@@ -39,7 +38,7 @@ public class FallingPiecePool {
 	
 	
 	
-	public void free(FallingPiece piece) {
+	public void free(final FallingPiece piece) {
 		if (freePieces.size() < maxSize) {
 			freePieces.add(piece);
 		}

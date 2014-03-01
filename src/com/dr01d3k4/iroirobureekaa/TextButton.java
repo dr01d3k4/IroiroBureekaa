@@ -11,7 +11,7 @@ import com.dr01d3k4.iroirobureekaa.render.Graphics;
 
 
 
-public class Button {
+public final class TextButton {
 	public Text text;
 	public int x;
 	public int y;
@@ -26,12 +26,13 @@ public class Button {
 	
 	
 	
-	public Button(final String rawText, final int x, final int y, final int width, final int height) {
+	public TextButton(final String rawText, final int x, final int y, final int width, final int height) {
 		text = new Text(rawText, x, y, width, height);
 		this.x = x;
 		this.y = y;
 		this.width = width;
 		this.height = height;
+		visible = true;
 		//		
 		//		textX = x + (width / 2);
 		//		textY = y + (int) (height * 0.7);

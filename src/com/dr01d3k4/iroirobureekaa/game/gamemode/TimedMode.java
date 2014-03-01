@@ -12,35 +12,57 @@ import android.graphics.Paint.Align;
 
 
 import com.dr01d3k4.iroirobureekaa.GameScreen;
+import com.dr01d3k4.iroirobureekaa.R;
 import com.dr01d3k4.iroirobureekaa.game.GameColour;
+import com.dr01d3k4.iroirobureekaa.game.GameWorld.GameState;
 import com.dr01d3k4.iroirobureekaa.render.Graphics;
 
 
 
-public class TimedMode extends GameMode {
+public final class TimedMode extends GameMode {
 	private float time;
-	private static final float MAX_TIME = 2 * 60;
+	private final float MAX_TIME;
+	private GameState previousGameState = GameState.NONE;
+	private final String lastMove;
 	
 	
 	
 	public TimedMode(final GameScreen gameScreen) {
 		super(gameScreen);
+		
+		time = 0;
+		MAX_TIME = gameScreen.mainActivity.getResources().getInteger(R.integer.timed_game_length);
+		lastMove = gameScreen.getString(R.string.last_move);
 	}
 	
 	
 	
 	@Override
 	public void postUpdate(final float deltaTime) {
-		time += deltaTime;
-		if (time >= MAX_TIME) {
-			gameScreen.gameOver();
+		if (gameScreen.isPaused()) {
+			return;
 		}
+		
+		time += deltaTime;
+		final GameState currentGameState = gameScreen.world.getState();
+		if (time >= MAX_TIME) {
+			time = MAX_TIME;
+			
+			if ((currentGameState == GameState.PLAYER_FALLING)
+				&& (previousGameState != GameState.PLAYER_FALLING)) {
+				gameScreen.gameOver();
+				return;
+			}
+		}
+		
+		previousGameState = currentGameState;
 	}
 	
 	
 	
 	private String timeRemainingToString() {
 		float timeRemaining = MAX_TIME - time;
+		String timeString;
 		
 		int minutes = 0;
 		int seconds = 0;
@@ -52,7 +74,11 @@ public class TimedMode extends GameMode {
 		
 		seconds = (int) Math.floor(timeRemaining);
 		
-		final String timeString = String.format(Locale.ENGLISH, "%02d:%02d", minutes, seconds);
+		if ((minutes == 0) && (seconds == 0)) {
+			timeString = lastMove;
+		} else {
+			timeString = String.format(Locale.ENGLISH, "%02d:%02d", minutes, seconds);
+		}
 		
 		return timeString;
 		
@@ -62,6 +88,10 @@ public class TimedMode extends GameMode {
 	
 	@Override
 	public void postRender(final float deltaTime) {
+		if (gameScreen.isPaused()) {
+			return;
+		}
+		
 		final Graphics graphics = gameScreen.getGraphics();
 		final Paint paint = graphics.getPaint();
 		

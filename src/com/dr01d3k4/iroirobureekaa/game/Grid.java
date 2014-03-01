@@ -7,15 +7,13 @@ import java.util.List;
 
 
 
-import com.dr01d3k4.iroirobureekaa.CellPool;
-import com.dr01d3k4.iroirobureekaa.FallingPiecePool;
 
 
 
-public class Grid {
-	public static final int WIDTH = 15; // 14;
-	public static final int HEIGHT = 22; // 22;
-	public static final int START_ROWS = 6; // (int) Math.ceil(HEIGHT / 4.0f);
+public final class Grid {
+	public static final int WIDTH = 12; // 15; // 14;
+	public static final int HEIGHT = 20; // 22; // 22;
+	public static final int START_ROWS = 5; // (int) Math.ceil(HEIGHT / 4.0f);
 	
 	public final int width;
 	public final int height;

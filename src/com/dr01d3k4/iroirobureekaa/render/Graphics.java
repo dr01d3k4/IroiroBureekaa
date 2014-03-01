@@ -23,7 +23,7 @@ import com.dr01d3k4.iroirobureekaa.render.Pixmap.PixmapFormat;
 
 
 
-public class Graphics {
+public final class Graphics {
 	private final AssetManager assets;
 	private final Bitmap frameBuffer;
 	private final Canvas canvas;
@@ -135,8 +135,6 @@ public class Graphics {
 	
 	
 	
-	
-	
 	public void drawPixmap(final Pixmap pixmap, final int x, final int y, final int sourceX, final int sourceY,
 		final int sourceWidth, final int sourceHeight, final int destinationWidth, final int destinationHeight) {
 		sourceRectangle.left = sourceX;
@@ -148,6 +146,22 @@ public class Graphics {
 		destinationRectangle.top = y;
 		destinationRectangle.right = (x + destinationWidth) - 1;
 		destinationRectangle.bottom = (y + destinationHeight) - 1;
+		
+		canvas.drawBitmap(pixmap.bitmap, sourceRectangle, destinationRectangle, null);
+	}
+	
+	
+	
+	public void drawPixmap(Pixmap pixmap, int x, int y, int width, int height) {
+		sourceRectangle.left = 0;
+		sourceRectangle.top = 0;
+		sourceRectangle.right = pixmap.getWidth() - 1;
+		sourceRectangle.bottom = pixmap.getHeight() - 1;
+		
+		destinationRectangle.left = x;
+		destinationRectangle.top = y;
+		destinationRectangle.right = (x + width) - 1;
+		destinationRectangle.bottom = (y + height) - 1;
 		
 		canvas.drawBitmap(pixmap.bitmap, sourceRectangle, destinationRectangle, null);
 	}
@@ -177,4 +191,33 @@ public class Graphics {
 	public int getHeight() {
 		return frameBuffer.getHeight();
 	}
+	
+	
+	
+	public Bitmap clipBitmap(Bitmap bitmap, int x, int y, int width, int height) {
+		return Bitmap.createBitmap(bitmap, x, y, width, height);
+	}
+	
+	
+	
+	public Bitmap scaleBitmap(Bitmap bitmap, int newWidth, int newHeight) {
+		return Bitmap.createScaledBitmap(bitmap, newWidth, newHeight, false);
+	}
+	
+	
+	
+	public Bitmap clipAndScaleBitmap(Bitmap bitmap, int x, int y, int sourceWidth, int sourceHeight, int newWidth,
+		int newHeight) {
+		return scaleBitmap(clipBitmap(bitmap, x, y, sourceWidth, sourceHeight), newWidth, newHeight);
+	}
+	
+	
+	
+	public Pixmap clipAndScalePixmap(Pixmap pixmap, int x, int y, int sourceWidth, int sourceHeight, int newWidth,
+		int newHeight) {
+		return new Pixmap(
+			clipAndScaleBitmap(pixmap.bitmap, x, y, sourceWidth, sourceHeight, newWidth, newHeight), pixmap
+				.getFormat());
+	}
+	
 }

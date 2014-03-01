@@ -7,7 +7,7 @@ import java.util.List;
 
 
 
-public class Pool<T> {
+public final class Pool<T> {
 	public interface PoolObjectFactory<T> {
 		public T createObject();
 	}

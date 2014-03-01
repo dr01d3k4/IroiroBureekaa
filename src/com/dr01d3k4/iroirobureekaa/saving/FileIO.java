@@ -17,7 +17,7 @@ import android.preference.PreferenceManager;
 
 
 
-public class FileIO {
+public final class FileIO {
 	private final Context context;
 	private final AssetManager assets;
 	@SuppressWarnings ("unused")

@@ -1,4 +1,4 @@
-package com.dr01d3k4.iroirobureekaa;
+package com.dr01d3k4.iroirobureekaa.game;
 
 
 
@@ -7,17 +7,16 @@ import java.util.List;
 
 
 
-import com.dr01d3k4.iroirobureekaa.game.Cell;
 
 
 
-public class CellPool {
+public final class CellPool {
 	private final List<Cell> freeCells;
 	private final int maxSize;
 	
 	
 	
-	public CellPool(int maxSize) {
+	public CellPool(final int maxSize) {
 		this.maxSize = maxSize;
 		freeCells = new ArrayList<Cell>(maxSize);
 	}
@@ -39,7 +38,7 @@ public class CellPool {
 	
 	
 	
-	public void free(Cell cell) {
+	public void free(final Cell cell) {
 		if (freeCells.size() < maxSize) {
 			freeCells.add(cell);
 		}

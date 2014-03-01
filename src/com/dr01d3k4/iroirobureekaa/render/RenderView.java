@@ -16,7 +16,7 @@ import com.dr01d3k4.iroirobureekaa.IroiroBureekaa;
 
 
 
-public class RenderView extends SurfaceView implements Runnable {
+public final class RenderView extends SurfaceView implements Runnable {
 	public IroiroBureekaa mainActivity;
 	private Bitmap frameBuffer;
 	private Thread renderThread = null;

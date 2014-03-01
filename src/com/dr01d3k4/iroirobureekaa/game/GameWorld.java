@@ -8,17 +8,15 @@ import java.util.Random;
 
 
 
-import com.dr01d3k4.iroirobureekaa.CellPool;
-import com.dr01d3k4.iroirobureekaa.FallingPiecePool;
 
 
 
-public class GameWorld {
+public final class GameWorld {
 	public enum GameState {
 		NONE, INITIALIZING, ADDING_NEW_ROW, PLAYER_FALLING, LANDING_CELLS, PRE_CLEARING, CLEARING, GAP_FILL_FALL, LOST, GAME_OVER
 	}
 	
-	
+	private final WorldListener worldListener;
 	
 	public final int width;
 	public final int height;
@@ -28,7 +26,7 @@ public class GameWorld {
 	
 	private final Random random;
 	
-	private static final float NEW_ROW_SLIDE_IN_TIME = 0.2f; // 0.14f;
+	private static final float NEW_ROW_SLIDE_IN_TIME = 0.16f; // 0.14f;
 	public float newRowSlideIn = 0;
 	public int[] nextRow;
 	public int[] newRow;
@@ -36,7 +34,7 @@ public class GameWorld {
 	private int startingRows = 0;
 	
 	private static final float NEW_ROW_BASE_TIME = 6.5f;
-	private static final float NEW_ROW_RANDOM_TIME = 6;
+	private static final float NEW_ROW_RANDOM_TIME = 12;
 	private float newRowTime = 0;
 	private float newRowCumulativeTime = 0;
 	
@@ -47,21 +45,21 @@ public class GameWorld {
 	public List<Cell> floodClearLocations;
 	public final List<Cell> preClearedList;
 	
-	private final float PLAYER_FALL_TIME = 0.165f; // 0.15f;
-	private final float PLAYER_FAST_FALL_TIME = 0.052f; // 0.048xf;
-	private final float PLAYER_HORIZONTAL_MOVE_TIME = 0.085f; // 0.081f;
+	private final float PLAYER_FALL_TIME = 0.17f; // 0.15f;
+	private final float PLAYER_FAST_FALL_TIME = 0.054f; // 0.048xf;
+	private final float PLAYER_HORIZONTAL_MOVE_TIME = 0.086f; // 0.081f;
 	private final float PLAYER_START_Y = (float) -0.8 / PLAYER_FALL_TIME;
 	public int playerHorizontalTarget;
 	private boolean playerFastFall = false;
 	public int nextFallingPieceColour;
 	
-	private final float PRE_CLEAR_TIME = 0.08f;
+	private final float PRE_CLEAR_TIME = 0.07f;
 	private float preClearCumulativeTime = 0;
 	
-	private final float FINAL_CLEAR_TIME = 0.4f;
+	private final float FINAL_CLEAR_TIME = 0.35f;
 	private float finalClearCumulativeTime = 0;
 	
-	private final float GAP_FILL_TIME = 0.1f;
+	private final float GAP_FILL_TIME = 0.13f;
 	
 	private static final int MIN_GROUP_SIZE = 3;
 	private static final int WILD_COLOUR_MULTIPLIER_MINIMUM = 3;
@@ -72,11 +70,13 @@ public class GameWorld {
 	
 	
 	
-	public GameWorld(final int width, final int height) {
+	public GameWorld(final int width, final int height, final WorldListener worldListener) {
 		this.width = width;
 		this.height = height;
 		grid = new Grid(this.width, this.height);
 		random = new Random();
+		
+		this.worldListener = worldListener;
 		
 		newRowTime = generateNewRowTime();
 		startingRows = Grid.START_ROWS;
@@ -717,6 +717,8 @@ public class GameWorld {
 			startFloodClearAt(x, y + 1, colour, newClearList);
 			startFloodClearAt(x - 1, y, colour, newClearList);
 		}
+		
+		worldListener.onBlockDestroy();
 		
 		return newClearList;
 	}

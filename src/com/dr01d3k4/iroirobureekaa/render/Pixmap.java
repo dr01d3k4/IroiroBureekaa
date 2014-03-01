@@ -6,7 +6,7 @@ import android.graphics.Bitmap;
 
 
 
-public class Pixmap {
+public final class Pixmap {
 	public static enum PixmapFormat {
 		ARGB8888, ARGB4444, RGB565
 	}

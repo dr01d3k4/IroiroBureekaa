@@ -2,8 +2,12 @@
 <resources>
 
 	<string name="app_name">イロイロ・ブレーカー！</string>
-	<string name="app_title">イロイロ ブレーカー</string>
-	<string name="play">スタート</string>
+	<string name="app_title">イロイロ ブレ|カ|</string>
+	<string name="main_menu_play">スタート!</string>
+	<string name="main_menu_highscores">ハイスコア</string>
+	<string name="main_menu_help">ヘルプ</string>
+	<string name="main_menu_settings">設定</string>
+	<string name="main_menu_about">About</string>
 	<string name="score">%1$dポイント</string>
 	<string name="score_change">%1$dポイント + %2$d</string>
 	<string name="paused">一時停止</string>
@@ -19,5 +23,12 @@
 	<string name="game_over_play_again">リトライ</string>
 	<string name="game_over_quit_game">@string/pause_quit_game</string>
 	<string name="loading">ロード中</string>
+	<string name="sign_out">G+からサイナウト</string>
+	<string name="sharing_score">I just got %1$d ポイント in #IroiroBurēkā!</string>
+	<string name="share">シェア</string>
+	<string name="select_mode">モードセレクト</string>
+	<string name="timed_mode">Timed (2分)</string>
+	<string name="infinite_mode">無限!</string>
+	<string name="last_move">最後の番!</string>
 
 </resources>
