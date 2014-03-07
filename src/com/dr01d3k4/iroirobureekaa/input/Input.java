@@ -56,5 +56,4 @@ public final class Input {
 	public void clearTouches() {
 		touchHandler.clearTouches();
 	}
-	
 }

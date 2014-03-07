@@ -2,6 +2,8 @@ package com.dr01d3k4.iroirobureekaa.game;
 
 
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 
@@ -26,30 +28,42 @@ public final class GameColour {
 	public static final int LIGHT_YELLOW = 0xfff2f214;
 	public static final int LIGHT_WILD = 0xffff00ff;
 	
-	private static final int[] RANDOM_COLOURS = {RED, GREEN, BLUE, YELLOW, WILD};
-	private static final int[] RANDOM_COLOUR_PROBABILITY = {324, 324, 249, 99, 4};
-	private static final int[] COLOUR_WORTH = {15, 15, 20, 45, 60};
+	private static final List<Integer> colourBag = new ArrayList<Integer>();
+	
+	private static final int[] RANDOM_COLOURS = {RED, GREEN, BLUE, YELLOW}; // , WILD};
+	private static final int[] RANDOM_COLOUR_PROBABILITY = {3, 3, 2, 1}; // {32, 32, 24, 10}; // , 2};
+	private static final int[] COLOUR_WORTH = {100, 100, 200, 450, 600};
+	private static final int COLOUR_WORTH_SCALE = 1;
 	
 	public static final int UI_LIGHT = Color.LTGRAY;
 	public static final int UI_DARK = Color.DKGRAY;
-	public static final int FALLING_COLUMN_HINT = 0xffefefef; // e0e0e0;
+	public static final int FALLING_COLUMN_HINT = 0xefefefef;
 	public static final int TEXT = Color.BLACK;
 	public static final int OUTLINE = Color.BLACK;
 	
 	
 	
-	public static int randomColour(final Random random) {
-		final int randomNumber = random.nextInt(1000);
-		int cumulative = 0;
-		int colour = RANDOM_COLOURS[0];
-		int length = RANDOM_COLOUR_PROBABILITY.length;
-		for (int i = 0; i < length; i += 1) {
-			cumulative += RANDOM_COLOUR_PROBABILITY[i];
-			if (randomNumber <= cumulative) {
-				colour = RANDOM_COLOURS[i];
-				break;
+	private static void fillColourBag() {
+		colourBag.clear();
+		
+		for (int i = 0, length = RANDOM_COLOURS.length; i < length; i += 1) {
+			for (int j = 0, count = RANDOM_COLOUR_PROBABILITY[i]; j < count; j += 1) {
+				colourBag.add(RANDOM_COLOURS[i]);
 			}
 		}
+	}
+	
+	
+	
+	public static int randomColourFromBag(final Random random) {
+		if (colourBag.size() == 0) {
+			fillColourBag();
+		}
+		
+		final int index = random.nextInt(colourBag.size());
+		final int colour = colourBag.get(index);
+		colourBag.remove(index);
+		
 		return colour;
 	}
 	
@@ -58,13 +72,11 @@ public final class GameColour {
 	public static int getColourWorth(int colour) {
 		colour = getDarkerColour(colour);
 		int worth = 0;
-		int length = RANDOM_COLOURS.length;
-		for (int i = 0; i < length; i += 1) {
-			if (RANDOM_COLOURS[i] == colour) {
-				worth = COLOUR_WORTH[i];
-				break;
-			}
-		}
+		try {
+			int index = getColourToIndex(colour);
+			worth = COLOUR_WORTH[index];
+		} catch (IllegalArgumentException e) {}
+		worth *= COLOUR_WORTH_SCALE;
 		return worth;
 	}
 	
@@ -111,5 +123,25 @@ public final class GameColour {
 	public static boolean isLightColour(final int colour) {
 		return ((colour == LIGHT_RED) || (colour == LIGHT_GREEN) || (colour == LIGHT_BLUE)
 			|| (colour == LIGHT_YELLOW) || (colour == LIGHT_WILD));
+	}
+	
+	
+	
+	public static int getColourToIndex(final int colour) {
+		switch (colour) {
+			case RED:
+				return 0;
+			case GREEN:
+				return 1;
+			case BLUE:
+				return 2;
+			case YELLOW:
+				return 3;
+			case WILD:
+				return 4;
+				
+			default:
+				throw new IllegalArgumentException("Colour not known");
+		}
 	}
 }

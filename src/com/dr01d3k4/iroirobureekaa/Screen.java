@@ -2,6 +2,7 @@ package com.dr01d3k4.iroirobureekaa;
 
 
 
+import com.dr01d3k4.iroirobureekaa.button.ButtonManager;
 import com.dr01d3k4.iroirobureekaa.input.Input;
 import com.dr01d3k4.iroirobureekaa.render.Graphics;
 
@@ -10,6 +11,7 @@ import com.dr01d3k4.iroirobureekaa.render.Graphics;
 public abstract class Screen {
 	public final IroiroBureekaa mainActivity;
 	public final Input input;
+	public final ButtonManager buttonManager;
 	public int CANVAS_WIDTH;
 	public int CANVAS_HEIGHT;
 	
@@ -18,6 +20,7 @@ public abstract class Screen {
 	public Screen(final IroiroBureekaa mainActivity) {
 		this.mainActivity = mainActivity;
 		input = mainActivity.getInput();
+		buttonManager = mainActivity.getButtonManager();
 	}
 	
 	

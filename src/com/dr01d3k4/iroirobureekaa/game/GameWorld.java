@@ -8,15 +8,14 @@ import java.util.Random;
 
 
 
-
-
-
 public final class GameWorld {
 	public enum GameState {
 		NONE, INITIALIZING, ADDING_NEW_ROW, PLAYER_FALLING, LANDING_CELLS, PRE_CLEARING, CLEARING, GAP_FILL_FALL, LOST, GAME_OVER
 	}
 	
-	private final WorldListener worldListener;
+	
+	
+	public final WorldListener worldListener;
 	
 	public final int width;
 	public final int height;
@@ -26,15 +25,15 @@ public final class GameWorld {
 	
 	private final Random random;
 	
-	private static final float NEW_ROW_SLIDE_IN_TIME = 0.16f; // 0.14f;
+	private static final float NEW_ROW_SLIDE_IN_TIME = 0.17f;
 	public float newRowSlideIn = 0;
 	public int[] nextRow;
 	public int[] newRow;
 	private int addedRows = 0;
 	private int startingRows = 0;
 	
-	private static final float NEW_ROW_BASE_TIME = 6.5f;
-	private static final float NEW_ROW_RANDOM_TIME = 12;
+	private static final float NEW_ROW_BASE_TIME = 5.5f;
+	private static final float NEW_ROW_RANDOM_TIME = 7;
 	private float newRowTime = 0;
 	private float newRowCumulativeTime = 0;
 	
@@ -45,24 +44,25 @@ public final class GameWorld {
 	public List<Cell> floodClearLocations;
 	public final List<Cell> preClearedList;
 	
-	private final float PLAYER_FALL_TIME = 0.17f; // 0.15f;
-	private final float PLAYER_FAST_FALL_TIME = 0.054f; // 0.048xf;
-	private final float PLAYER_HORIZONTAL_MOVE_TIME = 0.086f; // 0.081f;
+	private static final float PLAYER_FALL_TIME = 0.16f;
+	private static final float PLAYER_FAST_FALL_TIME = 0.052f;
+	public static final float PLAYER_HORIZONTAL_MOVE_TIME = 0.09f;
 	private final float PLAYER_START_Y = (float) -0.8 / PLAYER_FALL_TIME;
-	public int playerHorizontalTarget;
 	private boolean playerFastFall = false;
 	public int nextFallingPieceColour;
 	
-	private final float PRE_CLEAR_TIME = 0.07f;
+	private static final float PRE_CLEAR_TIME = 0.08f;
 	private float preClearCumulativeTime = 0;
 	
-	private final float FINAL_CLEAR_TIME = 0.35f;
+	private static final float FINAL_CLEAR_TIME = 0.35f;
 	private float finalClearCumulativeTime = 0;
 	
-	private final float GAP_FILL_TIME = 0.13f;
+	private static final float GAP_FILL_TIME = 0.11f;
 	
 	private static final int MIN_GROUP_SIZE = 3;
-	private static final int WILD_COLOUR_MULTIPLIER_MINIMUM = 3;
+	private static final int WILD_COLOUR_MULTIPLIER_MINIMUM = 4;
+	
+	private static final int CHANCE_PICK_ABOVE_COLOUR = 5;
 	
 	private int score = 0;
 	private int scoreChange = 0;
@@ -74,6 +74,7 @@ public final class GameWorld {
 		this.width = width;
 		this.height = height;
 		grid = new Grid(this.width, this.height);
+		grid.init();
 		random = new Random();
 		
 		this.worldListener = worldListener;
@@ -89,24 +90,18 @@ public final class GameWorld {
 		floodClearLocations = new ArrayList<Cell>();
 		preClearedList = new ArrayList<Cell>();
 		
-		playerHorizontalTarget = (int) Math.floor(width / 2);
-		nextFallingPieceColour = GameColour.randomColour(random);
+		nextFallingPieceColour = GameColour.randomColourFromBag(random);
 		
 		nextRow = generateNextRow();
 		newRow = nextRow;
+		
+		changeState(GameState.INITIALIZING);
 	}
 	
 	
 	
 	private float generateNewRowTime() {
 		return NEW_ROW_BASE_TIME + (random.nextFloat() * NEW_ROW_RANDOM_TIME);
-	}
-	
-	
-	
-	public void init() {
-		grid.init();
-		changeState(GameState.INITIALIZING);
 	}
 	
 	
@@ -129,13 +124,17 @@ public final class GameWorld {
 	
 	
 	
-	private void changeState(final GameState newState) {
+	public void changeState(final GameState newState) {
 		changeState(newState, false, false);
 	}
 	
 	
 	
 	private void changeState(final GameState newState, final boolean goingBack, final boolean forcePause) {
+		if (newState == GameState.ADDING_NEW_ROW) {
+			worldListener.onNewRowAdd();
+		}
+		
 		if ((newState == GameState.PLAYER_FALLING) || (newState == GameState.GAP_FILL_FALL)) {
 			for (int x = 0; x < width; x += 1) {
 				for (int y = 0; y < height; y += 1) {
@@ -179,6 +178,8 @@ public final class GameWorld {
 	
 	
 	public void update(final float deltaTime) {
+		worldListener.update();
+		
 		switch (state) {
 			case INITIALIZING: {
 				if (addedRows < startingRows) {
@@ -287,9 +288,22 @@ public final class GameWorld {
 	
 	private int[] generateNextRow() {
 		final int[] row = new int[width];
+		
 		for (int i = 0; i < width; i += 1) {
-			row[i] = GameColour.randomColour(random);
+			int newColour;
+			
+			final int colourAbove = grid.getColourAt(i, height - 1);
+			
+			if ((random.nextInt(100) < CHANCE_PICK_ABOVE_COLOUR) && (colourAbove != GameColour.NONE)
+				&& (colourAbove != GameColour.WILD) && (colourAbove != GameColour.OUT_OF_BOUNDS)) {
+				newColour = colourAbove;
+			} else {
+				newColour = GameColour.randomColourFromBag(random);
+			}
+			
+			row[i] = newColour;
 		}
+		
 		return row;
 	}
 	
@@ -301,38 +315,33 @@ public final class GameWorld {
 		if (fallingPieces.size() == 0) {
 			grid.clearMarkedForClear();
 			
-			int newColour = nextFallingPieceColour;
-			if (multiplier >= WILD_COLOUR_MULTIPLIER_MINIMUM) {
-				newColour = GameColour.WILD;
-			} else {
-				nextFallingPieceColour = GameColour.randomColour(random);
-			}
+			final int newColour = nextFallingPieceColour;
+			nextFallingPieceColour = GameColour.randomColourFromBag(random);
 			
 			playerPiece = fallingPiecePool
 				.newObject((float) Math.floor(width / 2), PLAYER_START_Y, newColour, true);
-			
+			// playerHorizontalTarget
+			playerPiece.horizontalTarget = playerPiece.getRoundedX();
 			fallingPieces.add(playerPiece);
-			playerHorizontalTarget = playerPiece.getRoundedX();
 		} else {
 			playerPiece = fallingPieces.get(0);
 		}
 		
 		multiplier = 0;
 		
-		attemptMovePlayerHorizontal(playerPiece, deltaTime);
+		playerPiece.attemptMoveHorizontal(grid, deltaTime);
 		
 		float fallSpeed = PLAYER_FALL_TIME;
 		if (playerFastFall && (playerPiece.getRoundedY() >= -1)) {
 			fallSpeed = PLAYER_FAST_FALL_TIME;
 		}
 		
-		final boolean moved = attemptMoveFallingPiece(playerPiece, 0, deltaTime / fallSpeed);
+		final boolean moved = playerPiece.attemptMove(0, deltaTime / fallSpeed, grid);
 		if (!moved) {
-			if (!handleFallingPieceCollision(playerPiece)) {
+			if (!playerPiece.handleCollision(this)) {
 				return;
 			}
 			
-			//  fallingPiecePool.free(playerPiece);
 			fallingPieces.clear();
 		}
 		
@@ -374,7 +383,8 @@ public final class GameWorld {
 							newColour = colour;
 						}
 						
-						final List<Cell> cells = grid.findFloodClearCells(x, y, newColour, cellPool);
+						final List<Cell> cells = grid
+							.findFloodClearCells(x, y, newColour, cellPool);
 						
 						if (cells.size() >= MIN_GROUP_SIZE) {
 							if (colour != GameColour.WILD) {
@@ -403,6 +413,10 @@ public final class GameWorld {
 		
 		landedPieces.clear();
 		grid.clearMarkedForClear();
+		
+		if (multiplier >= WILD_COLOUR_MULTIPLIER_MINIMUM) {
+			nextFallingPieceColour = GameColour.WILD;
+		}
 		
 		if (floodClearLocations.size() > 0) {
 			changeState(GameState.PRE_CLEARING);
@@ -442,13 +456,18 @@ public final class GameWorld {
 		finalClearCumulativeTime += deltaTime;
 		
 		if (finalClearCumulativeTime > FINAL_CLEAR_TIME) {
+			final int[] blocksDestroyed = {0, 0, 0, 0, 0};
+			
 			final int length = preClearedList.size();
 			Cell cell;
 			for (int i = 0; i < length; i += 1) {
 				cell = preClearedList.get(i);
+				blocksDestroyed[GameColour.getColourToIndex(cell.getColour())] += 1;
 				grid.setEmptyAt(cell.getX(), cell.getY());
 				cellPool.free(cell);
 			}
+			
+			worldListener.onBlockDestroy(blocksDestroyed);
 			
 			preClearedList.clear();
 			changeState(GameState.GAP_FILL_FALL);
@@ -473,14 +492,12 @@ public final class GameWorld {
 		FallingPiece fallingPiece;
 		for (int i = 0; i < length; i += 1) {
 			fallingPiece = fallingPieces.get(i);
-			moved = attemptMoveFallingPiece(fallingPiece, 0, deltaTime / GAP_FILL_TIME);
+			moved = fallingPiece.attemptMove(0, deltaTime / GAP_FILL_TIME, grid);
 			
 			if (!moved) {
-				if (!handleFallingPieceCollision(fallingPiece)) {
+				if (!fallingPiece.handleCollision(this)) {
 					return;
 				}
-				
-				// fallingPiecePool.free(fallingPiece);
 			} else {
 				newFallingPieces.add(fallingPiece);
 			}
@@ -496,77 +513,13 @@ public final class GameWorld {
 	
 	
 	
-	// TODO: Move Game.handleFallingPieceCollision to FallingPiece class
-	private boolean handleFallingPieceCollision(final FallingPiece fallingPiece) {
-		final int x = fallingPiece.getRoundedX();
-		final int y = fallingPiece.getRoundedY();
-		
-		if (y < 0) {
-			changeState(GameState.LOST);
-			return false;
-		}
-		
-		final int colour = fallingPiece.colour;
-		
-		grid.setColourAt(x, y, colour);
-		grid.setCellWorth(x, y, GameColour.getColourWorth(colour));
-		landedPieces.add(fallingPiece);
-		
-		return true;
-	}
-	
-	
-	
-	// TODO: Move Game.attemptMovePlayerHorizontal to FallingPiece class
-	private void attemptMovePlayerHorizontal(final FallingPiece fallingPiece, final float deltaTime) {
-		if (playerHorizontalTarget < 0) {
-			playerHorizontalTarget = 0;
-		}
-		
-		if (playerHorizontalTarget >= width) {
-			playerHorizontalTarget = width - 1;
-		}
-		
-		// TODO: Possible problem here with floating point accuracy?
-		if (fallingPiece.x != playerHorizontalTarget) {
-			final float moveAmount = deltaTime / PLAYER_HORIZONTAL_MOVE_TIME;
-			final int moveDirection = (playerHorizontalTarget > fallingPiece.x) ? 1 : -1;
-			
-			// if (Math.abs(fallingPiece.getX() - playerHorizontalTarget) < moveAmount) {
-			
-			if (Math.abs(fallingPiece.x - playerHorizontalTarget) < moveAmount) {
-				fallingPiece.x = Math.round(playerHorizontalTarget);
-			} else {
-				fallingPiece.x += moveAmount * moveDirection;
-			}
-			
-			final float x = fallingPiece.x;
-			final float y = fallingPiece.y;
-			
-			if (grid.isSolidAt((int) Math.floor(x), (int) Math.floor(y))
-				|| grid.isSolidAt((int) Math.floor(x), (int) Math.ceil(y))) {
-				fallingPiece.x = (int) Math.ceil(x);
-				playerHorizontalTarget = fallingPiece.getRoundedX();
-			}
-			
-			if (grid.isSolidAt((int) Math.ceil(x), (int) Math.floor(y))
-				|| grid.isSolidAt((int) Math.ceil(x), (int) Math.ceil(y))) {
-				fallingPiece.x = (int) Math.floor(x);
-				playerHorizontalTarget = fallingPiece.getRoundedX();
-			}
-		} else {
-			fallingPiece.x = playerHorizontalTarget;
-		}
-	}
-	
-	
-	
 	public void moveLeft(final float deltaTime) {
 		if (fallingPieces.size() != 1) {
 			return;
 		}
-		if (Math.abs(fallingPieces.get(0).x - playerHorizontalTarget) < (deltaTime / PLAYER_HORIZONTAL_MOVE_TIME)) {
-			playerHorizontalTarget -= 1;
+		FallingPiece playerPiece = fallingPieces.get(0);
+		if (Math.abs(playerPiece.x - playerPiece.horizontalTarget) < (deltaTime / PLAYER_HORIZONTAL_MOVE_TIME)) {
+			playerPiece.horizontalTarget -= 1;
 		}
 	}
 	
@@ -576,8 +529,9 @@ public final class GameWorld {
 		if (fallingPieces.size() != 1) {
 			return;
 		}
-		if (Math.abs(fallingPieces.get(0).x - playerHorizontalTarget) < (deltaTime / PLAYER_HORIZONTAL_MOVE_TIME)) {
-			playerHorizontalTarget += 1;
+		FallingPiece playerPiece = fallingPieces.get(0);
+		if (Math.abs(playerPiece.x - playerPiece.horizontalTarget) < (deltaTime / PLAYER_HORIZONTAL_MOVE_TIME)) {
+			playerPiece.horizontalTarget += 1;
 		}
 	}
 	
@@ -585,86 +539,6 @@ public final class GameWorld {
 	
 	public void setPlayerFastFall(final boolean downPressed) {
 		playerFastFall = downPressed;
-	}
-	
-	
-	
-	// TODO: Move Game.attemptMoveFallingPiece to FallingPiece class
-	private boolean attemptMoveFallingPiece(final FallingPiece fallingPiece, final float dx, float dy) {
-		boolean collision = false;
-		boolean collidedAtLeastOnce = false;
-		int collisionX = -1;
-		int collisionY = -1;
-		
-		final float newX = fallingPiece.x + dx;
-		final float newY = fallingPiece.y + dy;
-		
-		if (newX <= 0) {
-			fallingPiece.x = 0;
-		}
-		
-		if (newX >= (width - 1)) {
-			fallingPiece.x = width - 1;
-		}
-		
-		if (newY >= (height - 1)) {
-			fallingPiece.y = height - 1;
-			return false;
-		}
-		
-		if (fallingPiece.y > -1) {
-			boolean checkForCollision = true;
-			
-			final int startX = (int) ((dx <= 0) ? Math.floor(fallingPiece.x) : Math.ceil(fallingPiece.x));
-			final int endX = (int) ((dx <= 0) ? Math.ceil(fallingPiece.x + dx) : Math.floor(fallingPiece.x));
-			final int incX = (dx <= 0) ? 1 : -1;
-			
-			while (checkForCollision) {
-				collision = false;
-				checkForCollision = false;
-				
-				if ((fallingPiece.y < -1) && collidedAtLeastOnce) {
-					collision = true;
-					collisionX = fallingPiece.getRoundedX();
-					collisionY = fallingPiece.getRoundedY();
-					break;
-				}
-				
-				for (int x = startX; (dx <= 0) ? (x <= endX) : (x >= endX); x += incX) {
-					for (int y = (int) Math.floor(fallingPiece.y); y < (Math.ceil(fallingPiece.y
-						+ dy) + 1); y += 1) {
-						if (grid.isSolidAt(x, y)) {
-							collision = true;
-							collisionX = x;
-							collisionY = y;
-							break;
-						}
-					}
-					
-					if (collision) {
-						break;
-					}
-				}
-				
-				if (collision) {
-					checkForCollision = true;
-					collidedAtLeastOnce = true;
-					fallingPiece.y = (float) Math.floor(collisionY - 1);
-					dy = 0;
-				} else {
-					checkForCollision = false;
-				}
-			}
-		}
-		
-		if (collidedAtLeastOnce) {
-			fallingPiece.x = collisionX;
-		} else {
-			fallingPiece.x += dx;
-			fallingPiece.y += dy;
-		}
-		
-		return !collidedAtLeastOnce;
 	}
 	
 	
@@ -695,6 +569,10 @@ public final class GameWorld {
 		
 		final int length = floodClearList.size();
 		Cell cell;
+		
+		int[] blocksHighlighted = {0, 0, 0, 0, 0};
+		boolean wildHighlighted = false;
+		
 		for (int i = 0; i < length; i += 1) {
 			cell = floodClearList.get(i);
 			
@@ -704,8 +582,10 @@ public final class GameWorld {
 			lighter = GameColour.getLighterColour(colour);
 			
 			if (grid.isExactlyColourAt(x, y, GameColour.WILD)) {
+				wildHighlighted = true;
 				lighter = GameColour.getLighterColour(GameColour.WILD);
 			}
+			blocksHighlighted[GameColour.getColourToIndex(colour)] += 1;
 			
 			grid.setColourAt(x, y, lighter);
 			grid.setCellWorth(x, y, GameColour.getColourWorth(lighter));
@@ -718,7 +598,7 @@ public final class GameWorld {
 			startFloodClearAt(x - 1, y, colour, newClearList);
 		}
 		
-		worldListener.onBlockDestroy();
+		worldListener.onBlockHighlightStep(blocksHighlighted, wildHighlighted);
 		
 		return newClearList;
 	}
@@ -747,6 +627,25 @@ public final class GameWorld {
 		}
 		
 		return height - 1;
+	}
+	
+	
+	
+	public FallingPiece getPlayerPiece() {
+		if (fallingPieces.size() == 1) {
+			return fallingPieces.get(0);
+		} else {
+			return null;
+		}
+	}
+	
+	
+	
+	public void setPlayerHorizontalTarget(int moveToX) {
+		FallingPiece playerPiece = getPlayerPiece();
+		if (playerPiece != null) {
+			playerPiece.horizontalTarget = moveToX;
+		}
 	}
 	
 }

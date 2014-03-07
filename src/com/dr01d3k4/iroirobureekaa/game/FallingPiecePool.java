@@ -7,9 +7,6 @@ import java.util.List;
 
 
 
-
-
-
 public final class FallingPiecePool {
 	private final List<FallingPiece> freePieces;
 	private final int maxSize;

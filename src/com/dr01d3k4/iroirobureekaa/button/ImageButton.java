@@ -1,4 +1,4 @@
-package com.dr01d3k4.iroirobureekaa;
+package com.dr01d3k4.iroirobureekaa.button;
 
 
 
@@ -11,36 +11,29 @@ import com.dr01d3k4.iroirobureekaa.render.Pixmap;
 
 
 
-public final class ImageButton {
+public final class ImageButton extends Button {
 	public Pixmap backgroundImage;
 	public Pixmap hoverImage;
-	public int x;
-	public int y;
-	public int width;
-	public int height;
-	public boolean hovered;
-	public boolean visible = true;
 	
 	
 	
 	public ImageButton(final Pixmap backgroundImage, final Pixmap hoverImage, final int x, final int y,
 		final int width, final int height) {
+		this(backgroundImage, hoverImage, x, y, width, height, null);
+	}
+	
+	
+	
+	public ImageButton(final Pixmap backgroundImage, final Pixmap hoverImage, final int x, final int y,
+		final int width, final int height, OnButtonClickListener clickListener) {
+		super(x, y, width, height, clickListener);
 		this.backgroundImage = backgroundImage;
 		this.hoverImage = hoverImage;
-		this.x = x;
-		this.y = y;
-		this.width = width;
-		this.height = height;
 	}
 	
 	
 	
-	public boolean isOver(final int testX, final int testY) {
-		return ((testX >= x) && (testY >= y) && (testX <= (x + width)) && (testY <= (y + height)));
-	}
-	
-	
-	
+	@Override
 	public void render(final Graphics graphics, final Paint paint) {
 		if (!visible) {
 			return;

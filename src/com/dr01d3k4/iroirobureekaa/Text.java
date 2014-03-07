@@ -46,21 +46,6 @@ public final class Text {
 	
 	
 	
-	//	
-	//	
-	//	
-	//	public Text(final String text, final int x, final int y, final int maxWidth, final int maxHeight,
-	//		final Align align) {
-	//		this(text, x, y, maxWidth, maxHeight, align, false);
-	//	}
-	//	
-	//	
-	//	
-	//	public Text(final String text, final int x, final int y, final int maxWidth, final int maxHeight,
-	//		final boolean scale) {
-	//		this(text, x, y, maxWidth, maxHeight, Align.CENTER, scale);
-	//	}
-	
 	public void setText(final String text) {
 		this.text = text;
 		calculateTextData(new Paint());
@@ -68,13 +53,19 @@ public final class Text {
 	
 	
 	
-	public void render(final Graphics graphics, final Paint paint) {
+	public void render(final Graphics graphics, final Paint paint, final int colour) {
 		paint.setTextSize(textSize);
 		paint.setTextScaleX(textScaleX);
 		paint.setTextAlign(align);
 		final int renderX = (align == Align.LEFT) ? x : ((align == Align.CENTER) ? x + (maxWidth / 2) : x
 			+ maxWidth);
-		graphics.drawText(text, renderX, (int) ((y + maxHeight) - textBaseline), GameColour.TEXT);
+		graphics.drawText(text, renderX, (int) ((y + maxHeight) - textBaseline), colour);
+	}
+	
+	
+	
+	public void render(final Graphics graphics, final Paint paint) {
+		render(graphics, paint, GameColour.TEXT);
 	}
 	
 	

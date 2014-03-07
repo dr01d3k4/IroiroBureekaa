@@ -15,7 +15,7 @@ public final class LoadingScreen extends Screen {
 	private Text loadingText;
 	private boolean loaded = false;
 	private float time = 0;
-	private final float MIN_TIME = 1f;
+	private final float MIN_TIME = 0.5f;
 	
 	
 	
@@ -40,9 +40,7 @@ public final class LoadingScreen extends Screen {
 	public void update(final float deltaTime) {
 		if (!loaded) {
 			Assets.loadAssets(mainActivity);
-			
 			mainActivity.gameData = Settings.load(mainActivity.getFileIO());
-			
 			loaded = true;
 		}
 		

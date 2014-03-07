@@ -2,9 +2,14 @@ package com.dr01d3k4.iroirobureekaa.game;
 
 
 
+import java.util.Random;
+
+
+
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Paint.Align;
+import android.graphics.Typeface;
 
 
 
@@ -34,16 +39,18 @@ public final class GameRenderer {
 	
 	private final Text pausedTextObject;
 	
-	private Pixmap redBlock;
-	private Pixmap redLightBlock;
-	private Pixmap blueBlock;
-	private Pixmap blueLightBlock;
-	private Pixmap greenBlock;
-	private Pixmap greenLightBlock;
-	private Pixmap yellowBlock;
-	private Pixmap yellowLightBlock;
-	private Pixmap wildBlock;
-	private Pixmap wildLightBlock;
+	private final Pixmap redBlock;
+	private final Pixmap redLightBlock;
+	private final Pixmap blueBlock;
+	private final Pixmap blueLightBlock;
+	private final Pixmap greenBlock;
+	private final Pixmap greenLightBlock;
+	private final Pixmap yellowBlock;
+	private final Pixmap yellowLightBlock;
+	private final Pixmap wildBlock;
+	private final Pixmap wildLightBlock;
+	
+	private int lastTargetX;
 	
 	
 	
@@ -56,32 +63,42 @@ public final class GameRenderer {
 		scoreTextBase = game.getString(R.string.score);
 		scoreChangeTextBase = game.getString(R.string.score_change);
 		
-		scoreTextObject = new Text(scoreTextBase, headerTextInset, (int) (game.HEADER_HEIGHT * 0.1),
-			game.pauseButton.x - headerTextInset, (int) (game.HEADER_HEIGHT * 0.4), Align.LEFT);
+		scoreTextObject = new Text(scoreTextBase, headerTextInset, (int) (game.HEADER_HEIGHT * 0.05),
+			game.pauseButton.x - headerTextInset, (int) (game.HEADER_HEIGHT * 0.5), Align.LEFT);
 		
 		nextTextObject = new Text(game.getString(R.string.next), headerTextInset,
-			(int) (game.HEADER_HEIGHT * 0.6), game.pauseButton.x - headerTextInset,
-			(int) (game.HEADER_HEIGHT * 0.4), Align.LEFT);
+			(int) (game.HEADER_HEIGHT * 0.65), game.pauseButton.x - headerTextInset,
+			(int) (game.HEADER_HEIGHT * 0.35), Align.LEFT);
 		nextCellX = nextTextObject.getRight() + headerTextInset;
 		
 		pausedTextObject = new Text(game.getString(R.string.paused), 0, game.PAUSED_TEXT_Y, game.CANVAS_WIDTH,
 			game.PAUSED_TEXT_HEIGHT);
 		
-		Graphics graphics = game.getGraphics();
+		final Graphics graphics = game.getGraphics();
 		
-		int i = game.IMAGE_CELL_SIZE;
-		int c = game.CELL_SIZE;
-		Pixmap textures = Assets.textures;
+		final int i = game.IMAGE_CELL_SIZE;
+		final int c = game.CELL_SIZE;
+		final Pixmap textures = Assets.textures;
 		redBlock = graphics.clipAndScalePixmap(textures, 0, 0, i, i, c, c);
 		redLightBlock = graphics.clipAndScalePixmap(textures, i, 0, i, i, c, c);
 		blueBlock = graphics.clipAndScalePixmap(textures, 0, i, i, i, c, c);
 		blueLightBlock = graphics.clipAndScalePixmap(textures, i, i, i, i, c, c);
-		greenBlock = graphics.clipAndScalePixmap(textures, 0, 2 * i, i, i, c, c);
-		greenLightBlock = graphics.clipAndScalePixmap(textures, i, 2 * i, i, i, c, c);
+		
+		boolean showCreepers = ((new Random()).nextInt(100) < 10);
+		if (showCreepers) {
+			greenBlock = graphics.clipAndScalePixmap(textures, 2 * i, i, i, i, c, c);
+			greenLightBlock = graphics.clipAndScalePixmap(textures, 3 * i, i, i, i, c, c);
+		} else {
+			greenBlock = graphics.clipAndScalePixmap(textures, 0, 2 * i, i, i, c, c);
+			greenLightBlock = graphics.clipAndScalePixmap(textures, i, 2 * i, i, i, c, c);
+		}
+		
 		yellowBlock = graphics.clipAndScalePixmap(textures, 0, 3 * i, i, i, c, c);
 		yellowLightBlock = graphics.clipAndScalePixmap(textures, i, 3 * i, i, i, c, c);
 		wildBlock = graphics.clipAndScalePixmap(textures, 0, 4 * i, i, i, c, c);
 		wildLightBlock = graphics.clipAndScalePixmap(textures, i, 4 * i, i, i, c, c);
+		
+		lastTargetX = (int) Math.floor(gridWidth / 2);
 	}
 	
 	
@@ -116,7 +133,7 @@ public final class GameRenderer {
 	
 	
 	
-	private Pixmap colourToPixmap(int colour) {
+	private Pixmap colourToPixmap(final int colour) {
 		switch (colour) {
 			case GameColour.RED:
 				return redBlock;
@@ -160,8 +177,8 @@ public final class GameRenderer {
 	
 	
 	
-	private void renderCell(final Graphics graphics, final float drawX, final float drawY, int width, int height,
-		final int colour) {
+	private void renderCell(final Graphics graphics, final float drawX, final float drawY, final int width,
+		final int height, final int colour) {
 		final int x = (int) drawX;
 		final int y = (int) drawY;
 		
@@ -173,7 +190,11 @@ public final class GameRenderer {
 	private void drawGameGrid(final Graphics graphics, final Paint paint) {
 		graphics.drawRectangle(0, 0, game.GRID_PIXEL_WIDTH, game.GRID_PIXEL_HEIGHT, Color.WHITE);
 		
-		graphics.drawRectangle(game.world.playerHorizontalTarget * game.CELL_SIZE, 0, game.CELL_SIZE, game.GRID_PIXEL_HEIGHT, GameColour.FALLING_COLUMN_HINT);
+		FallingPiece playerPiece = game.world.getPlayerPiece();
+		if (playerPiece != null) {
+			lastTargetX = playerPiece.horizontalTarget;
+		}
+		graphics.drawRectangle(lastTargetX * game.CELL_SIZE, 0, game.CELL_SIZE, game.GRID_PIXEL_HEIGHT, GameColour.FALLING_COLUMN_HINT);
 		
 		for (int x = 0; x < gridWidth; x += 1) {
 			for (int y = 0; y < gridHeight; y += 1) {
@@ -234,16 +255,15 @@ public final class GameRenderer {
 				.getScoreChange());
 		}
 		
+		paint.setTypeface(Typeface.DEFAULT_BOLD);
 		scoreTextObject.setText(scoreText);
-		scoreTextObject.render(graphics, paint);
+		scoreTextObject.render(graphics, paint, (scoreChange == 0) ? GameColour.TEXT : GameColour.RED);
+		paint.setTypeface(Typeface.DEFAULT);
+		
 		nextTextObject.render(graphics, paint);
 		
-		final int nextPieceSize = (int) (nextTextObject.maxHeight); //  - nextTextObject.textBaseline); // (int) (game.HEADER_HEIGHT * 0.4);
-		renderCell(graphics, nextCellX, nextTextObject.y,
-		// (int) (game.HEADER_HEIGHT * 0.54),
-		nextPieceSize, nextPieceSize, game.world.nextFallingPieceColour);
-		
-		game.pauseButton.render(graphics, paint);
+		final int nextPieceSize = (nextTextObject.maxHeight);
+		renderCell(graphics, nextCellX, nextTextObject.y, nextPieceSize, nextPieceSize, game.world.nextFallingPieceColour);
 	}
 	
 	
@@ -251,19 +271,16 @@ public final class GameRenderer {
 	private void renderOnScreenControls(final Graphics graphics, final Paint paint) {
 		if (game.hasOnScreenControls()) {
 			graphics.drawRectangle(0, game.CANVAS_HEIGHT - game.FOOTER_HEIGHT, game.CANVAS_WIDTH, game.FOOTER_HEIGHT, GameColour.UI_LIGHT);
-			game.leftButton.render(graphics, paint);
-			game.downButton.render(graphics, paint);
-			game.rightButton.render(graphics, paint);
 		}
 	}
 	
 	
 	
 	private void renderPaused(final Graphics graphics, final Paint paint) {
-		graphics.clear(GameColour.UI_LIGHT);
+		graphics.clear(Color.WHITE);
+		paint.setTypeface(Typeface.DEFAULT_BOLD);
 		pausedTextObject.render(graphics, paint);
-		game.resumeButton.render(graphics, paint);
-		game.pauseQuitButton.render(graphics, paint);
+		paint.setTypeface(Typeface.DEFAULT);
 	}
 	
 	
@@ -284,12 +301,17 @@ public final class GameRenderer {
 			
 			graphics.drawRectangle(0, 0, game.CANVAS_WIDTH, game.TRANSLATE_CENTER_Y, GameColour.UI_DARK);
 			
+			paint.setStrokeWidth(4);
+			graphics.outlineRectangle(game.TRANSLATE_CENTER_X, game.TRANSLATE_CENTER_Y, game.GRID_PIXEL_WIDTH, game.GRID_PIXEL_HEIGHT, Color.BLACK);
+			
 			renderHeader(graphics, paint);
 			renderOnScreenControls(graphics, paint);
 			
-		} else if (game.isPaused()) {
+		} else {
 			renderPaused(graphics, paint);
 		}
+		
+		game.buttonManager.render(graphics, paint);
 	}
 	
 	

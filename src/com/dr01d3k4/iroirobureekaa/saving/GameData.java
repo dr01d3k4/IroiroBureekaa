@@ -98,7 +98,6 @@ public final class GameData implements Serializable {
 			throw new IllegalArgumentException("Game mode not known");
 		}
 		
-
 		totalGames += 1;
 		totalScore += score;
 	}

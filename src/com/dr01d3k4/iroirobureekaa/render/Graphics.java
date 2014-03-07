@@ -219,5 +219,4 @@ public final class Graphics {
 			clipAndScaleBitmap(pixmap.bitmap, x, y, sourceWidth, sourceHeight, newWidth, newHeight), pixmap
 				.getFormat());
 	}
-	
 }

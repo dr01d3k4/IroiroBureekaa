@@ -19,6 +19,7 @@ import android.widget.Button;
 
 import com.dr01d3k4.iroirobureekaa.audio.Audio;
 import com.dr01d3k4.iroirobureekaa.audio.Sound;
+import com.dr01d3k4.iroirobureekaa.button.ButtonManager;
 import com.dr01d3k4.iroirobureekaa.input.Input;
 import com.dr01d3k4.iroirobureekaa.render.Graphics;
 import com.dr01d3k4.iroirobureekaa.render.RenderView;
@@ -44,6 +45,7 @@ public final class IroiroBureekaa extends BaseGameActivity implements OnClickLis
 	private FileIO fileIO;
 	private Input input;
 	private Audio audio;
+	private ButtonManager buttonManager;
 	private Screen screen;
 	public GameData gameData;
 	
@@ -96,6 +98,7 @@ public final class IroiroBureekaa extends BaseGameActivity implements OnClickLis
 		fileIO = new FileIO(this);
 		input = new Input(this, renderView, SCALE_X, SCALE_Y);
 		audio = new Audio(this);
+		buttonManager = new ButtonManager();
 		gameData = new GameData();
 		
 		final Intent intent = getIntent();
@@ -163,6 +166,7 @@ public final class IroiroBureekaa extends BaseGameActivity implements OnClickLis
 		if (screen != null) {
 			screen.dispose();
 		}
+		buttonManager.clearButtons();
 		screen = newScreen;
 		screen.calculateSize();
 		runOnUiThread(new Runnable() {
@@ -195,6 +199,12 @@ public final class IroiroBureekaa extends BaseGameActivity implements OnClickLis
 	
 	public Audio getAudio() {
 		return audio;
+	}
+	
+	
+	
+	public ButtonManager getButtonManager() {
+		return buttonManager;
 	}
 	
 	

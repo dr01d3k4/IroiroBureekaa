@@ -2,33 +2,29 @@ package com.dr01d3k4.iroirobureekaa;
 
 
 
-import java.util.List;
-
-
-
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.Typeface;
 
 
 
+import com.dr01d3k4.iroirobureekaa.button.Button;
+import com.dr01d3k4.iroirobureekaa.button.OnButtonClickListener;
+import com.dr01d3k4.iroirobureekaa.button.TextButton;
 import com.dr01d3k4.iroirobureekaa.game.gamemode.GameMode;
-import com.dr01d3k4.iroirobureekaa.input.Input;
-import com.dr01d3k4.iroirobureekaa.input.TouchEvent;
 import com.dr01d3k4.iroirobureekaa.render.Graphics;
 
 
 
 public final class GameModeSelectScreen extends Screen {
-	public TextButton[] buttons;
+	public Button[] buttons;
 	public Text titleText;
 	
 	
 	
 	public GameModeSelectScreen(final IroiroBureekaa mainActivity) {
 		super(mainActivity);
-		
-		buttons = new TextButton[GameMode.MODES.length];
-		
+		buttons = new Button[GameMode.MODES.length];
 	}
 	
 	
@@ -36,23 +32,31 @@ public final class GameModeSelectScreen extends Screen {
 	@Override
 	public void calculateSize() {
 		super.calculateSize();
-		final int pausedTextY = getDimensionPixel(R.dimen.title_text_y); // (int) (CANVAS_HEIGHT * 0.1);
-		final int pausedTextHeight = getDimensionPixel(R.dimen.title_text_height); // (int) (CANVAS_HEIGHT * 0.15);
 		
-		titleText = new Text(getString(R.string.select_mode), 0, pausedTextY, CANVAS_WIDTH, pausedTextHeight);
-		// titleText = new Text(getString(R.string.select_mode), (int) (CANVAS_WIDTH * 0.05), (int) (CANVAS_HEIGHT * 0.1),
-		// (int) (CANVAS_WIDTH * 0.9), (int) (CANVAS_HEIGHT * 0.12));
+		final int titleTextY = getDimensionPixel(R.dimen.title_text_y);
+		final int titleTextHeight = getDimensionPixel(R.dimen.title_text_height);
 		
-		final int buttonWidth = getDimensionPixel(R.dimen.button_width); // (int) (CANVAS_WIDTH * 0.8);
+		titleText = new Text(getString(R.string.select_mode), 0, titleTextY, CANVAS_WIDTH, titleTextHeight);
+		
+		final int buttonWidth = getDimensionPixel(R.dimen.button_width);
 		final int buttonX = (CANVAS_WIDTH - buttonWidth) / 2;
-		final int buttonHeight = getDimensionPixel(R.dimen.button_height); // (int) (CANVAS_HEIGHT * 0.1);
-		final int buttonMargin = getDimensionPixel(R.dimen.button_margin); // (int) (CANVAS_HEIGHT * 0.1);
+		final int buttonHeight = getDimensionPixel(R.dimen.button_height);
+		final int buttonMargin = getDimensionPixel(R.dimen.button_margin);
+		final int buttonStep = buttonHeight + buttonMargin;
 		
-		final int buttonY = pausedTextY + pausedTextHeight + buttonMargin; // (int) (CANVAS_HEIGHT * 0.3);
+		final int buttonY = titleTextY + titleTextHeight + buttonMargin;
 		
 		for (int i = 0, length = GameMode.MODES.length; i < length; i += 1) {
-			buttons[i] = new TextButton(getString(GameMode.getTitle(i)), buttonX, buttonY
-				+ (i * (buttonHeight + buttonMargin)), buttonWidth, buttonHeight);
+			final int id = i;
+			buttons[i] = buttonManager.addButton(new TextButton(getString(GameMode.getTitle(i)), buttonX,
+				buttonY + (i * buttonStep), buttonWidth, buttonHeight, new OnButtonClickListener() {
+					@Override
+					public void onClick() {
+						mainActivity.playSound(Assets.buttonSelect);
+						input.clearTouches();
+						mainActivity.changeScreen(new GameScreen(mainActivity, id));
+					}
+				}));
 		}
 	}
 	
@@ -60,46 +64,7 @@ public final class GameModeSelectScreen extends Screen {
 	
 	@Override
 	public void update(final float deltaTime) {
-		final List<TouchEvent> touchEvents = input.getTouchEvents();
-		
-		for (int i = 0, length = buttons.length; i < length; i += 1) {
-			buttons[i].hovered = false;
-		}
-		
-		int x;
-		int y;
-		boolean down;
-		for (int pointer = 0, length = Input.MAX_TOUCHPOINTS; pointer < length; pointer += 1) {
-			x = input.getTouchX(pointer);
-			y = input.getTouchY(pointer);
-			down = input.isTouchDown(pointer);
-			
-			if (down) {
-				for (int i = 0, buttonsLength = buttons.length; i < buttonsLength; i += 1) {
-					if (buttons[i].visible && buttons[i].isOver(x, y)) {
-						buttons[i].hovered = true;
-					}
-				}
-			}
-		}
-		
-		TouchEvent touchEvent;
-		for (int i = 0, length = touchEvents.size(); i < length; i += 1) {
-			touchEvent = touchEvents.get(i);
-			x = touchEvent.x;
-			y = touchEvent.y;
-			
-			if (touchEvent.type == TouchEvent.TOUCH_UP) {
-				for (int b = 0, buttonsLength = buttons.length; b < buttonsLength; b += 1) {
-					if (buttons[b].visible && buttons[b].isOver(x, y)) {
-						mainActivity.playSound(Assets.buttonSelect);
-						input.clearTouches();
-						mainActivity.changeScreen(new GameScreen(mainActivity, b));
-						return;
-					}
-				}
-			}
-		}
+		buttonManager.update(input);
 	}
 	
 	
@@ -111,11 +76,11 @@ public final class GameModeSelectScreen extends Screen {
 		
 		graphics.clear(Color.WHITE);
 		
+		paint.setTypeface(Typeface.DEFAULT_BOLD);
 		titleText.render(graphics, paint);
+		paint.setTypeface(Typeface.DEFAULT);
 		
-		for (final TextButton button : buttons) {
-			button.render(graphics, paint);
-		}
+		buttonManager.render(graphics, paint);
 	}
 	
 	

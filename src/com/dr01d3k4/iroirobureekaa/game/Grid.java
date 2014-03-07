@@ -7,13 +7,10 @@ import java.util.List;
 
 
 
-
-
-
 public final class Grid {
-	public static final int WIDTH = 12; // 15; // 14;
-	public static final int HEIGHT = 20; // 22; // 22;
-	public static final int START_ROWS = 5; // (int) Math.ceil(HEIGHT / 4.0f);
+	public static final int WIDTH = 12;
+	public static final int HEIGHT = 20;
+	public static final int START_ROWS = 5;
 	
 	public final int width;
 	public final int height;
@@ -199,7 +196,7 @@ public final class Grid {
 	
 	
 	private void findFloodClearCellsRecursive(final int x, final int y, final int colour, final List<Cell> cells,
-		CellPool cellPool) {
+		final CellPool cellPool) {
 		if (isColourAt(x, y, colour) && !hasBeenLookedAt(x, y)) {
 			cells.add(cellPool.newObject(x, y, colour));
 			setLookedAt(x, y, true);
@@ -212,7 +209,7 @@ public final class Grid {
 	
 	
 	
-	public List<Cell> findFloodClearCells(final int x, final int y, final int colour, CellPool cellPool) {
+	public List<Cell> findFloodClearCells(final int x, final int y, final int colour, final CellPool cellPool) {
 		final List<Cell> cells = new ArrayList<Cell>();
 		clearLookedAt();
 		findFloodClearCellsRecursive(x, y, colour, cells, cellPool);
@@ -222,22 +219,26 @@ public final class Grid {
 	
 	
 	
-	public List<FallingPiece> findCellsToFall(FallingPiecePool fallingPiecePool) {
+	public List<FallingPiece> findCellsToFall(final FallingPiecePool fallingPiecePool) {
 		final List<FallingPiece> fallingPieces = new ArrayList<FallingPiece>();
 		
 		boolean shouldFall = false;
+		boolean previousWasEmpty = false;
+		
 		for (int x = 0; x < width; x += 1) {
 			shouldFall = isEmptyAt(x, height - 1);
+			previousWasEmpty = shouldFall;
 			
 			for (int y = height - 2; y >= 0; y -= 1) {
 				if (isEmptyAt(x, y)) {
+					previousWasEmpty = true;
 					shouldFall = true;
 				} else {
 					if (shouldFall) {
-						// TODO: Maybe use previousWasEmpty to optimise this?
 						fallingPieces.add(fallingPiecePool
-							.newObject(x, y, getColourAt(x, y), isEmptyAt(x, y + 1)));
+							.newObject(x, y, getColourAt(x, y), previousWasEmpty));
 					}
+					previousWasEmpty = false;
 				}
 			}
 		}
@@ -248,7 +249,7 @@ public final class Grid {
 	
 	
 	public void setFallingPiecesEmpty(final List<FallingPiece> fallingPieces) {
-		int length = fallingPieces.size();
+		final int length = fallingPieces.size();
 		FallingPiece fallingPiece;
 		for (int i = 0; i < length; i += 1) {
 			fallingPiece = fallingPieces.get(i);

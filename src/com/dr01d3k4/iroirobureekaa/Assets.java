@@ -17,7 +17,11 @@ public final class Assets {
 	private static boolean loaded = false;
 	public static Pixmap textures;
 	public static Sound buttonSelect;
+	public static Sound blockLand;
+	public static Sound blockHighlight;
+	public static Sound wildBlockHighlight;
 	public static Sound blockDestroy;
+	public static Sound newRowAdd;
 	public static float SOUND_VOLUME = 1f;
 	
 	
@@ -38,8 +42,8 @@ public final class Assets {
 		
 		for (int x = 0; x < width; x += 1) {
 			for (int y = 0; y < height; y += 1) {
-				if (newBitmap.getPixel(x, y) == 0xffffffff) {
-					newBitmap.setPixel(x, y, 0x00000000);
+				if (newBitmap.getPixel(x, y) == 0xffff00ff) {
+					newBitmap.setPixel(x, y, 0x00ffffff);
 				}
 			}
 		}
@@ -49,7 +53,11 @@ public final class Assets {
 		
 		final Audio audio = game.getAudio();
 		buttonSelect = audio.newSound("button_select.wav");
+		blockLand = audio.newSound("block_land.wav");
+		blockHighlight = audio.newSound("block_highlight.wav");
+		wildBlockHighlight = audio.newSound("wild_block_highlight.wav");
 		blockDestroy = audio.newSound("block_destroy.wav");
+		newRowAdd = audio.newSound("new_row_add.wav");
 	}
 	
 	
@@ -66,8 +74,20 @@ public final class Assets {
 		buttonSelect.dispose();
 		buttonSelect = null;
 		
+		blockLand.dispose();
+		blockLand = null;
+		
+		blockHighlight.dispose();
+		blockHighlight = null;
+		
+		wildBlockHighlight.dispose();
+		wildBlockHighlight = null;
+		
 		blockDestroy.dispose();
 		blockDestroy = null;
+		
+		newRowAdd.dispose();
+		newRowAdd = null;
 		
 		loaded = false;
 	}

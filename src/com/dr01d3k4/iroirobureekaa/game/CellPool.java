@@ -7,9 +7,6 @@ import java.util.List;
 
 
 
-
-
-
 public final class CellPool {
 	private final List<Cell> freeCells;
 	private final int maxSize;
